@@ -240,7 +240,7 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
             </div>
             <div>
               <span className="text-2xl font-bold neon-text font-mono">SplitChain</span>
-              <div className="text-xs text-green-400/70 font-mono">v2.0.1-beta</div>
+             
             </div>
           </div>
           <ConnectWalletButton
