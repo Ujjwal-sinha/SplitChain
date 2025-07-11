@@ -1,5 +1,5 @@
 {
-  "name": "my-v0-project",
+  "name": "splitchain-dapp",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,6 +11,7 @@
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
     "@nomiclabs/hardhat-waffle": "latest",
+    "@openzeppelin/contracts": "^5.3.0",
     "@radix-ui/react-accordion": "1.2.2",
     "@radix-ui/react-alert-dialog": "1.1.4",
     "@radix-ui/react-aspect-ratio": "1.1.1",
@@ -46,8 +47,9 @@
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
     "date-fns": "4.1.0",
+    "dotenv": "^17.2.0",
     "embla-carousel-react": "8.5.1",
-    "ethereum-waffle": "latest",
+    "ethereum-waffle": "^3.4.4",
     "expo": "latest",
     "expo-asset": "latest",
     "expo-file-system": "latest",
@@ -72,14 +74,25 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.9",
+    "@nomicfoundation/hardhat-ethers": "^3.0.9",
+    "@nomicfoundation/hardhat-ignition-ethers": "^0.15.13",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.13",
+    "@nomicfoundation/hardhat-toolbox": "^6.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.14",
     "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@typechain/ethers-v6": "^0.5.1",
+    "@typechain/hardhat": "^9.1.0",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "chai": "^5.2.1",
     "ethers": "^6.15.0",
     "hardhat": "^2.25.0",
+    "hardhat-gas-reporter": "^2.3.0",
     "postcss": "^8.5",
+    "solidity-coverage": "^0.8.16",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
   }
