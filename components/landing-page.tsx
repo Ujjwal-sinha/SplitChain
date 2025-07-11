@@ -21,6 +21,10 @@ import {
   LayoutDashboard,
 } from "lucide-react"
 import type * as THREE from "three"
+// Add the following imports at the top of the file, alongside existing imports:
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { MessageSquare, Lightbulb, CheckCircle } from "lucide-react"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 function MatrixSphere() {
   const meshRef = useRef<THREE.Mesh>(null)
@@ -128,6 +132,87 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
     { label: "Active Groups", value: "1,247", icon: Users, color: "from-blue-500 to-blue-400" }, // Added color, changed to blue
     { label: "Settlements", value: "8,932", icon: TrendingUp, color: "from-green-600 to-green-500" }, // Added color
     { label: "Gas Saved", value: "67%", icon: Zap, color: "from-blue-300 to-blue-200" }, // Added color, changed to blue
+  ]
+
+  // Add the following data structures within the LandingPage component, before the `return` statement:
+
+  const howItWorksSteps = [
+    {
+      icon: Users,
+      title: "Create a Group",
+      description: "Start a new decentralized expense group with your friends or team.",
+      color: "from-green-500 to-green-400",
+    },
+    {
+      icon: Receipt,
+      title: "Add Expenses",
+      description: "Log expenses and let the smart contract handle the splitting.",
+      color: "from-blue-500 to-blue-400",
+    },
+    {
+      icon: DollarSign,
+      title: "Settle Debts",
+      description: "Easily settle balances on-chain with minimal gas fees.",
+      color: "from-green-600 to-green-500",
+    },
+    {
+      icon: CheckCircle,
+      title: "Track Analytics",
+      description: "Gain insights into your spending and group financial health.",
+      color: "from-blue-300 to-blue-200",
+    },
+  ]
+
+  const testimonials = [
+    {
+      name: "Alice Johnson",
+      handle: "@web3alice",
+      quote:
+        "SplitChain has revolutionized how my DAO manages shared expenses. It's truly trustless and incredibly efficient!",
+      avatarFallback: "AJ",
+    },
+    {
+      name: "Bob Williams",
+      handle: "@defi_bob",
+      quote:
+        "The gasless transactions on BlockDAG make SplitChain a game-changer for daily expense splitting. Highly recommend!",
+      avatarFallback: "BW",
+    },
+    {
+      name: "Charlie Brown",
+      handle: "@nft_charlie",
+      quote:
+        "Finally, an expense app that understands Web3. The UI is sleek, and the smart contract integration is seamless.",
+      avatarFallback: "CB",
+    },
+  ]
+
+  const faqs = [
+    {
+      question: "What is SplitChain?",
+      answer:
+        "SplitChain is a decentralized expense sharing protocol built on the BlockDAG Network, enabling trustless, gasless, and instant expense management for Web3 communities.",
+    },
+    {
+      question: "How does SplitChain ensure trustlessness?",
+      answer:
+        "All expense splitting and settlement logic is handled by audited smart contracts on the blockchain, removing the need for a central authority or trusting individual members.",
+    },
+    {
+      question: "Is SplitChain truly gasless?",
+      answer:
+        "SplitChain leverages Layer 2 scaling solutions and optimized smart contracts on BlockDAG to minimize transaction costs, making them effectively gasless for most users.",
+    },
+    {
+      question: "What wallets are supported?",
+      answer:
+        "SplitChain supports all EVM-compatible wallets, including MetaMask, Coinbase Wallet, Trust Wallet, Rabby, Brave Wallet, and more via WalletConnect.",
+    },
+    {
+      question: "Can I use SplitChain for non-crypto expenses?",
+      answer:
+        "While SplitChain is built on Web3, you can use it to track any type of expense. Settlements are handled on-chain, but the expense tracking itself is flexible.",
+    },
   ]
 
   return (
@@ -270,6 +355,72 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
                   <span className="font-mono">AI-Powered</span>
                 </div>
               </div>
+            </div>
+
+            {/* How It Works Section */}
+            <div className="max-w-7xl mx-auto text-center mb-20">
+              <h2 className="text-3xl font-bold neon-text mb-12 font-mono">How It Works</h2>
+              <div className="grid md:grid-cols-4 gap-8">
+                {howItWorksSteps.map((step, index) => (
+                  <Card key={index} className="glass-green neon-border card-hover">
+                    <CardContent className="p-6 text-center">
+                      <div
+                        className={`w-16 h-16 bg-gradient-to-r ${step.color} rounded-lg flex items-center justify-center mx-auto mb-6`}
+                      >
+                        <step.icon className="w-8 h-8 text-black" />
+                      </div>
+                      <h3 className="text-xl font-semibold neon-text mb-3 font-mono">{step.title}</h3>
+                      <p className="text-green-400/80 text-sm">{step.description}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Testimonials Section */}
+            <div className="max-w-7xl mx-auto text-center mb-20">
+              <h2 className="text-3xl font-bold neon-text mb-12 font-mono">What Our Users Say</h2>
+              <div className="grid md:grid-cols-3 gap-8">
+                {testimonials.map((testimonial, index) => (
+                  <Card key={index} className="glass-blue neon-blue-border card-hover">
+                    <CardContent className="p-6 text-center">
+                      <MessageSquare className="w-8 h-8 text-blue-400 mx-auto mb-4" />
+                      <p className="text-blue-300 italic mb-6">"{testimonial.quote}"</p>
+                      <div className="flex items-center justify-center space-x-3">
+                        <Avatar className="w-12 h-12 bg-gradient-to-r from-blue-500 to-green-500">
+                          <AvatarFallback className="text-black font-semibold">
+                            {testimonial.avatarFallback}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-semibold neon-blue-text font-mono">{testimonial.name}</p>
+                          <p className="text-sm text-blue-400/70 font-mono">{testimonial.handle}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* FAQ Section */}
+            <div className="max-w-4xl mx-auto mb-20">
+              <h2 className="text-3xl font-bold neon-text text-center mb-12 font-mono">Frequently Asked Questions</h2>
+              <Accordion type="single" collapsible className="w-full">
+                {faqs.map((faq, index) => (
+                  <AccordionItem
+                    key={index}
+                    value={`item-${index}`}
+                    className="glass-green neon-border mb-4 rounded-lg px-4"
+                  >
+                    <AccordionTrigger className="text-left text-green-300 hover:text-green-200 font-mono text-lg py-4">
+                      <Lightbulb className="w-5 h-5 mr-3 text-green-400" />
+                      {faq.question}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-green-400/80 pb-4 font-mono">{faq.answer}</AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
             </div>
 
             {/* CTA Section */}
