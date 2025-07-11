@@ -1,34 +1,63 @@
 require("@nomiclabs/hardhat-waffle")
 require("@nomiclabs/hardhat-ethers")
 
+
+
 module.exports = {
   solidity: {
-    version: "0.8.19",
+    version: "0.8.24",
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200,
+        runs: 1,
+        details: {
+          yul: true,
+          yulDetails: {
+            stackAllocation: true,
+            optimizerSteps: 'dhfoDgvulfnTUtnIf'
+          }
+        }
       },
-    },
+      viaIR: true
+    }
   },
   networks: {
-    hardhat: {
-      chainId: 1337,
+    primordial: {
+      url: "https://rpc.primordial.bdagscan.com",
+      accounts: [process.env.DEPLOYER_PRIVATE_KEY || ""],
+      chainId: 1043,
+      gasPrice: 50000000000,
+      timeout: 200000
     },
-    blockdag: {
-      url: "https://rpc.blockdag.network", // Replace with actual BlockDAG RPC
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      chainId: 12345, // Replace with actual BlockDAG chain ID
+    hardhat: {
+      chainId: 31337,
     },
     localhost: {
-      url: "http://127.0.0.1:8545",
-      chainId: 1337,
+      url: "http://localhost:8545",
+    }
+  },
+  etherscan: {
+    apiKey: {
+      primordial: "no-api-key-needed"
     },
+    customChains: [
+      {
+        network: "primordial",
+        chainId: 1043,
+        urls: {
+          apiURL: "https://primordial.bdagscan.com/api",
+          browserURL: "https://primordial.bdagscan.com"
+        }
+      }
+    ]
   },
   paths: {
     sources: "./contracts",
     tests: "./test",
     cache: "./cache",
-    artifacts: "./artifacts",
+    artifacts: "./artifacts"
   },
-}
+  mocha: {
+    timeout: 60000
+  }
+};
