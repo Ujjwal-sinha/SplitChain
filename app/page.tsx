@@ -8,6 +8,7 @@ import { GroupManagement } from "@/components/group-management"
 import { Settings } from "@/components/settings"
 import { CreateGroupModal } from "@/components/create-group-modal"
 import { WalletProvider } from "@/components/wallet-provider"
+import { Footer } from "@/components/footer"
 
 export default function SplitChainApp() {
   const [currentPage, setCurrentPage] = useState<"landing" | "dashboard" | "group" | "analytics" | "settings">(
@@ -67,6 +68,7 @@ export default function SplitChainApp() {
             }}
           />
         )}
+        <Footer onPageChange={handlePageChange} />
       </div>
     </WalletProvider>
   )
