@@ -5,7 +5,7 @@
   "scripts": {
     "compile": "forge build",
     "test": "forge test",
-    "deploy": "forge script script/DeploySplitChain.s.sol --rpc-url https://rpc.primordial.bdagscan.com --broadcast --verify --etherscan-api-key YOUR_BLOCKDAG_EXPLORER_API_KEY_HERE -vvvv"
+   "deploy": "forge script script/DeploySplitChain.s.sol --rpc-url https://rpc.primordial.bdagscan.com --broadcast -vvvv"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.3"
