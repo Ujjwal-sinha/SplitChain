@@ -97,53 +97,53 @@ export function Settings({ onPageChange }: SettingsProps) {
           </Card>
 
           {/* Wallet & Security */}
-          <Card className="glass-blue neon-blue-border">
-            {/* Changed to glass-blue and neon-blue-border */}
+          <Card className="glass-white neon-white-border">
+            {/* Changed to glass-white and neon-white-border */}
             <CardHeader>
-              <CardTitle className="neon-blue-text font-mono flex items-center">
-                {/* Changed to neon-blue-text */}
-                <Shield className="w-5 h-5 mr-2 text-blue-400" /> {/* Changed to blue */}
+              <CardTitle className="neon-white-text font-mono flex items-center">
+                {/* Changed to neon-white-text */}
+                <Shield className="w-5 h-5 mr-2 text-slate-400" /> {/* Changed to slate */}
                 Wallet & Security
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="p-4 rounded-lg glass-blue border border-blue-500/20">
-                {/* Changed to glass-blue */}
+              <div className="p-4 rounded-lg glass-white border border-slate-500/20">
+                {/* Changed to glass-white */}
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <p className="font-semibold neon-blue-text font-mono">Connected Wallet</p>{" "}
-                    {/* Changed to neon-blue-text */}
-                    <p className="text-sm text-blue-400/70 font-mono">0x1234...5678</p> {/* Changed to blue */}
+                    <p className="font-semibold neon-white-text font-mono">Connected Wallet</p>{" "}
+                    {/* Changed to neon-white-text */}
+                    <p className="text-sm text-slate-400/70 font-mono">0x1234...5678</p> {/* Changed to slate */}
                   </div>
                   <div className="flex space-x-2">
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-blue-400/70 hover:text-blue-400">
-                      {/* Changed to blue */}
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-slate-400/70 hover:text-slate-400">
+                      {/* Changed to slate */}
                       <Copy className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-blue-400/70 hover:text-blue-400">
-                      {/* Changed to blue */}
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-slate-400/70 hover:text-slate-400">
+                      {/* Changed to slate */}
                       <ExternalLink className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-400 rounded-full" />
-                  <span className="text-sm text-blue-400 font-mono">Connected to BlockDAG Network</span>{" "}
-                  {/* Changed to blue */}
+                  <span className="text-sm text-slate-400 font-mono">Connected to BlockDAG Network</span>{" "}
+                  {/* Changed to slate */}
                 </div>
               </div>
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-semibold neon-blue-text font-mono">Two-Factor Authentication</p>{" "}
-                    {/* Changed to neon-blue-text */}
-                    <p className="text-sm text-blue-400/70 font-mono">Add an extra layer of security</p>{" "}
-                    {/* Changed to blue */}
+                    <p className="font-semibold neon-white-text font-mono">Two-Factor Authentication</p>{" "}
+                    {/* Changed to neon-white-text */}
+                    <p className="text-sm text-slate-400/70 font-mono">Add an extra layer of security</p>{" "}
+                    {/* Changed to slate */}
                   </div>
                   <Button
                     variant="outline"
-                    className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10 font-mono bg-transparent" /* Changed to blue */
+                    className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 font-mono bg-transparent" /* Changed to slate */
                   >
                     Enable 2FA
                   </Button>
@@ -151,37 +151,37 @@ export function Settings({ onPageChange }: SettingsProps) {
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-semibold neon-blue-text font-mono">Hardware Wallet</p>{" "}
-                    {/* Changed to neon-blue-text */}
-                    <p className="text-sm text-blue-400/70 font-mono">
+                    <p className="font-semibold neon-white-text font-mono">Hardware Wallet</p>{" "}
+                    {/* Changed to neon-white-text */}
+                    <p className="text-sm text-slate-400/70 font-mono">
                       Connect a hardware wallet for enhanced security
                     </p>{" "}
-                    {/* Changed to blue */}
+                    {/* Changed to slate */}
                   </div>
                   <Button
                     variant="outline"
-                    className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10 font-mono bg-transparent" /* Changed to blue */
+                    className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 font-mono bg-transparent" /* Changed to slate */
                   >
                     Connect
                   </Button>
                 </div>
 
-                <div className="p-4 rounded-lg glass-blue border border-blue-500/20">
-                  {/* Changed to glass-blue */}
+                <div className="p-4 rounded-lg glass-white border border-slate-500/20">
+                  {/* Changed to glass-white */}
                   <div className="flex items-center justify-between mb-2">
-                    <p className="font-semibold neon-blue-text font-mono">Private Key</p>{" "}
-                    {/* Changed to neon-blue-text */}
+                    <p className="font-semibold neon-white-text font-mono">Private Key</p>{" "}
+                    {/* Changed to neon-white-text */}
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setShowPrivateKey(!showPrivateKey)}
-                      className="text-blue-400/70 hover:text-blue-400" /* Changed to blue */
+                      className="text-slate-400/70 hover:text-slate-400" /* Changed to slate */
                     >
                       {showPrivateKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </Button>
                   </div>
-                  <p className="text-sm text-blue-400/70 font-mono">
-                    {/* Changed to blue */}
+                  <p className="text-sm text-slate-400/70 font-mono">
+                    {/* Changed to slate */}
                     {showPrivateKey ? "0x1234567890abcdef..." : "••••••••••••••••••••••••••••••••"}
                   </p>
                 </div>
@@ -245,22 +245,22 @@ export function Settings({ onPageChange }: SettingsProps) {
           </Card>
 
           {/* Privacy */}
-          <Card className="glass-blue neon-blue-border">
-            {/* Changed to glass-blue and neon-blue-border */}
+          <Card className="glass-white neon-white-border">
+            {/* Changed to glass-white and neon-white-border */}
             <CardHeader>
-              <CardTitle className="neon-blue-text font-mono flex items-center">
-                {/* Changed to neon-blue-text */}
-                <Lock className="w-5 h-5 mr-2 text-blue-400" /> {/* Changed to blue */}
+              <CardTitle className="neon-white-text font-mono flex items-center">
+                {/* Changed to neon-white-text */}
+                <Lock className="w-5 h-5 mr-2 text-slate-400" /> {/* Changed to slate */}
                 Privacy Settings
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold neon-blue-text font-mono">Public Profile</p>{" "}
-                  {/* Changed to neon-blue-text */}
-                  <p className="text-sm text-blue-400/70 font-mono">Make your profile visible to other users</p>{" "}
-                  {/* Changed to blue */}
+                  <p className="font-semibold neon-white-text font-mono">Public Profile</p>{" "}
+                  {/* Changed to neon-white-text */}
+                  <p className="text-sm text-slate-400/70 font-mono">Make your profile visible to other users</p>{" "}
+                  {/* Changed to slate */}
                 </div>
                 <Switch
                   checked={privacy.publicProfile}
@@ -270,10 +270,10 @@ export function Settings({ onPageChange }: SettingsProps) {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold neon-blue-text font-mono">Show Balance</p>{" "}
-                  {/* Changed to neon-blue-text */}
-                  <p className="text-sm text-blue-400/70 font-mono">Display your balance in group views</p>{" "}
-                  {/* Changed to blue */}
+                  <p className="font-semibold neon-white-text font-mono">Show Balance</p>{" "}
+                  {/* Changed to neon-white-text */}
+                  <p className="text-sm text-slate-400/70 font-mono">Display your balance in group views</p>{" "}
+                  {/* Changed to slate */}
                 </div>
                 <Switch
                   checked={privacy.showBalance}
@@ -283,10 +283,10 @@ export function Settings({ onPageChange }: SettingsProps) {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold neon-blue-text font-mono">Allow Group Invites</p>{" "}
-                  {/* Changed to neon-blue-text */}
-                  <p className="text-sm text-blue-400/70 font-mono">Allow others to invite you to groups</p>{" "}
-                  {/* Changed to blue */}
+                  <p className="font-semibold neon-white-text font-mono">Allow Group Invites</p>{" "}
+                  {/* Changed to neon-white-text */}
+                  <p className="text-sm text-slate-400/70 font-mono">Allow others to invite you to groups</p>{" "}
+                  {/* Changed to slate */}
                 </div>
                 <Switch
                   checked={privacy.allowInvites}
@@ -341,15 +341,15 @@ export function Settings({ onPageChange }: SettingsProps) {
                 <Switch defaultChecked />
               </div>
 
-              <div className="p-4 rounded-lg glass-blue border border-blue-500/20">
-                {/* Changed to glass-blue */}
+              <div className="p-4 rounded-lg glass-white border border-slate-500/20">
+                {/* Changed to glass-white */}
                 <div className="flex items-center space-x-2 mb-2">
-                  <Globe className="w-5 h-5 text-blue-400" /> {/* Changed to blue */}
-                  <span className="font-semibold neon-blue-text font-mono">Multi-Chain Support</span>{" "}
-                  {/* Changed to neon-blue-text */}
+                  <Globe className="w-5 h-5 text-slate-400" /> {/* Changed to slate */}
+                  <span className="font-semibold neon-white-text font-mono">Multi-Chain Support</span>{" "}
+                  {/* Changed to neon-white-text */}
                 </div>
-                <p className="text-sm text-blue-400/70 mb-3">Enable cross-chain functionality (Beta)</p>{" "}
-                {/* Changed to blue */}
+                <p className="text-sm text-slate-400/70 mb-3">Enable cross-chain functionality (Beta)</p>{" "}
+                {/* Changed to slate */}
                 <Switch />
               </div>
             </CardContent>

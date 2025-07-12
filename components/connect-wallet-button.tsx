@@ -40,7 +40,7 @@ export function ConnectWalletButton({
       <div className="flex items-center space-x-2">
         <Button
           variant="outline"
-          className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10 bg-blue-500/5 backdrop-blur-sm font-mono" // Changed to blue
+          className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 bg-slate-500/5 backdrop-blur-sm font-mono" // Changed to slate
           onClick={() => setShowWalletModal(true)}
         >
           <div className="w-2 h-2 bg-green-400 rounded-full mr-2" />
@@ -67,7 +67,7 @@ export function ConnectWalletButton({
         size={size}
         className={`${
           variant === "default"
-            ? "bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white border-0 shadow-lg shadow-blue-500/25" // Mixed gradient
+            ? "bg-gradient-to-r from-slate-600 to-green-600 hover:from-slate-700 hover:to-green-700 text-white border-0 shadow-lg shadow-slate-500/25" // Mixed gradient
             : ""
         } ${className}`}
       >

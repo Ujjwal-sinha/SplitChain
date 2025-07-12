@@ -24,32 +24,32 @@ export function WalletCard() {
   ]
 
   return (
-    <Card className="glass-blue neon-blue-border h-full">
+    <Card className="glass-white neon-white-border h-full">
       {" "}
-      {/* Changed to glass-blue and neon-blue-border */}
+      {/* Changed to glass-white and neon-white-border */}
       <CardHeader>
-        <CardTitle className="neon-blue-text flex items-center font-mono">
+        <CardTitle className="neon-white-text flex items-center font-mono">
           {" "}
-          {/* Changed to neon-blue-text */}
-          <Wallet className="w-5 h-5 mr-2 text-blue-400" /> {/* Changed to blue */}
+          {/* Changed to neon-white-text */}
+          <Wallet className="w-5 h-5 mr-2 text-slate-400" /> {/* Changed to slate */}
           Wallet
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Wallet Info */}
         <div className="flex items-center space-x-3">
-          <Avatar className="w-12 h-12 bg-gradient-to-r from-blue-500 to-green-500">
+          <Avatar className="w-12 h-12 bg-gradient-to-r from-slate-500 to-green-500">
             {" "}
             {/* Mixed gradient */}
             <AvatarFallback className="text-black font-semibold">AE</AvatarFallback> {/* Icon color */}
           </Avatar>
           <div className="flex-1">
-            <p className="font-semibold neon-blue-text font-mono">{displayName}</p> {/* Changed to neon-blue-text */}
+            <p className="font-semibold neon-white-text font-mono">{displayName}</p> {/* Changed to neon-white-text */}
             <div className="flex items-center space-x-2">
-              <p className="text-sm text-blue-400/70 font-mono">{walletAddress}</p> {/* Changed to blue */}
-              <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-blue-400/70 hover:text-blue-400">
+              <p className="text-sm text-slate-400/70 font-mono">{walletAddress}</p> {/* Changed to slate */}
+              <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-slate-400/70 hover:text-slate-400">
                 {" "}
-                {/* Changed to blue */}
+                {/* Changed to slate */}
                 <Copy className="w-3 h-3" />
               </Button>
             </div>
@@ -64,33 +64,33 @@ export function WalletCard() {
             <div className="w-2 h-2 bg-green-400 rounded-full mr-2" />
             BlockDAG Testnet
           </Badge>
-          <Button size="sm" variant="ghost" className="text-blue-400/70 hover:text-blue-400">
+          <Button size="sm" variant="ghost" className="text-slate-400/70 hover:text-slate-400">
             {" "}
-            {/* Changed to blue */}
+            {/* Changed to slate */}
             <ExternalLink className="w-4 h-4" />
           </Button>
         </div>
 
         {/* Token Balances */}
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-blue-300 font-mono">Token Balances</h4> {/* Changed to blue */}
+          <h4 className="text-sm font-medium text-slate-300 font-mono">Token Balances</h4> {/* Changed to slate */}
           {tokens.map((token) => (
-            <div key={token.symbol} className="flex items-center justify-between p-2 rounded-lg glass-blue">
+            <div key={token.symbol} className="flex items-center justify-between p-2 rounded-lg glass-white">
               {" "}
-              {/* Changed to glass-blue */}
+              {/* Changed to glass-white */}
               <div className="flex items-center space-x-2">
-                <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center">
+                <div className="w-6 h-6 bg-gradient-to-r from-slate-500 to-green-500 rounded-full flex items-center justify-center">
                   {" "}
                   {/* Mixed gradient */}
                   <Zap className="w-3 h-3 text-black" /> {/* Icon color */}
                 </div>
-                <span className="neon-blue-text font-medium font-mono">{token.symbol}</span>{" "}
-                {/* Changed to neon-blue-text */}
+                <span className="neon-white-text font-medium font-mono">{token.symbol}</span>{" "}
+                {/* Changed to neon-white-text */}
               </div>
               <div className="text-right">
-                <p className="neon-blue-text font-semibold font-mono">{token.balance}</p>{" "}
-                {/* Changed to neon-blue-text */}
-                <p className="text-xs text-blue-400/70 font-mono">{token.value}</p> {/* Changed to blue */}
+                <p className="neon-white-text font-semibold font-mono">{token.balance}</p>{" "}
+                {/* Changed to neon-white-text */}
+                <p className="text-xs text-slate-400/70 font-mono">{token.value}</p> {/* Changed to slate */}
               </div>
             </div>
           ))}
@@ -101,19 +101,19 @@ export function WalletCard() {
           <Button
             size="sm"
             variant="outline"
-            className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10 bg-transparent font-mono"
+            className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 bg-transparent font-mono"
           >
             {" "}
-            {/* Changed to blue */}
+            {/* Changed to slate */}
             Send
           </Button>
           <Button
             size="sm"
             variant="outline"
-            className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10 bg-transparent font-mono"
+            className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 bg-transparent font-mono"
           >
             {" "}
-            {/* Changed to blue */}
+            {/* Changed to slate */}
             Receive
           </Button>
         </div>

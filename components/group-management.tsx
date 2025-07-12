@@ -89,18 +89,18 @@ export function GroupManagement({ onPageChange }: GroupManagementProps) {
           </div>
 
           {showCreateGroup && (
-            <Card className="glass-blue neon-blue-border">
+            <Card className="glass-white neon-white-border">
               {" "}
-              {/* Changed to glass-blue and neon-blue-border */}
+              {/* Changed to glass-white and neon-white-border */}
               <CardHeader>
-                <CardTitle className="neon-blue-text font-mono">Create New Group</CardTitle>{" "}
-                {/* Changed to neon-blue-text */}
+                <CardTitle className="neon-white-text font-mono">Create New Group</CardTitle>{" "}
+                {/* Changed to neon-white-text */}
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="groupName" className="text-blue-400 font-mono">
+                  <Label htmlFor="groupName" className="text-slate-400 font-mono">
                     {" "}
-                    {/* Changed to blue */}
+                    {/* Changed to slate */}
                     Group Name
                   </Label>
                   <Input
@@ -108,13 +108,13 @@ export function GroupManagement({ onPageChange }: GroupManagementProps) {
                     placeholder="e.g., Weekend Trip, Office Lunch..."
                     value={newGroupName}
                     onChange={(e) => setNewGroupName(e.target.value)}
-                    className="bg-black/50 border-blue-500/30 text-blue-400 placeholder:text-blue-400/50 font-mono" /* Changed to blue */
+                    className="bg-black/50 border-slate-500/30 text-slate-400 placeholder:text-slate-400/50 font-mono" /* Changed to slate */
                   />
                 </div>
                 <div>
-                  <Label htmlFor="groupDescription" className="text-blue-400 font-mono">
+                  <Label htmlFor="groupDescription" className="text-slate-400 font-mono">
                     {" "}
-                    {/* Changed to blue */}
+                    {/* Changed to slate */}
                     Description
                   </Label>
                   <Input
@@ -122,7 +122,7 @@ export function GroupManagement({ onPageChange }: GroupManagementProps) {
                     placeholder="Enter group description..."
                     value={newGroupDescription}
                     onChange={(e) => setNewGroupDescription(e.target.value)}
-                    className="bg-black/50 border-blue-500/30 text-blue-400 placeholder:text-blue-400/50 font-mono" /* Changed to blue */
+                    className="bg-black/50 border-slate-500/30 text-slate-400 placeholder:text-slate-400/50 font-mono" /* Changed to slate */
                   />
                 </div>
                 <div className="flex space-x-2">
@@ -132,7 +132,7 @@ export function GroupManagement({ onPageChange }: GroupManagementProps) {
                   <Button
                     onClick={() => setShowCreateGroup(false)}
                     variant="outline"
-                    className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10 font-mono bg-transparent" /* Changed to blue */
+                    className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 font-mono bg-transparent" /* Changed to slate */
                   >
                     Cancel
                   </Button>
@@ -181,17 +181,17 @@ export function GroupManagement({ onPageChange }: GroupManagementProps) {
               {selectedGroupData ? (
                 <div className="space-y-6">
                   {/* Group Info */}
-                  <Card className="glass-blue neon-blue-border">
+                  <Card className="glass-white neon-white-border">
                     {" "}
-                    {/* Changed to glass-blue and neon-blue-border */}
+                    {/* Changed to glass-white and neon-white-border */}
                     <CardHeader>
                       <div className="flex items-center justify-between">
-                        <CardTitle className="neon-blue-text font-mono">{selectedGroupData.name}</CardTitle>{" "}
-                        {/* Changed to neon-blue-text */}
+                        <CardTitle className="neon-white-text font-mono">{selectedGroupData.name}</CardTitle>{" "}
+                        {/* Changed to neon-white-text */}
                         <Button
                           variant="outline"
                           size="sm"
-                          className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10 font-mono bg-transparent" /* Changed to blue */
+                          className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 font-mono bg-transparent" /* Changed to slate */
                         >
                           <SettingsIcon className="w-4 h-4 mr-2" />
                           Settings
@@ -199,42 +199,42 @@ export function GroupManagement({ onPageChange }: GroupManagementProps) {
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <p className="text-blue-400/80 font-mono">{selectedGroupData.description}</p>{" "}
-                      {/* Changed to blue */}
+                      <p className="text-slate-400/80 font-mono">{selectedGroupData.description}</p>{" "}
+                      {/* Changed to slate */}
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="p-3 rounded-lg glass-blue border border-blue-500/20">
+                        <div className="p-3 rounded-lg glass-white border border-slate-500/20">
                           {" "}
-                          {/* Changed to glass-blue */}
-                          <div className="text-sm text-blue-400/70 font-mono">Contract Address</div>{" "}
-                          {/* Changed to blue */}
+                          {/* Changed to glass-white */}
+                          <div className="text-sm text-slate-400/70 font-mono">Contract Address</div>{" "}
+                          {/* Changed to slate */}
                           <div className="flex items-center space-x-2">
-                            <span className="font-mono text-blue-400">{selectedGroupData.contractAddress}</span>{" "}
-                            {/* Changed to blue */}
+                            <span className="font-mono text-slate-400">{selectedGroupData.contractAddress}</span>{" "}
+                            {/* Changed to slate */}
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-6 w-6 p-0 text-blue-400/70 hover:text-blue-400" /* Changed to blue */
+                              className="h-6 w-6 p-0 text-slate-400/70 hover:text-slate-400" /* Changed to slate */
                             >
                               <Copy className="w-3 h-3" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-6 w-6 p-0 text-blue-400/70 hover:text-blue-400" /* Changed to blue */
+                              className="h-6 w-6 p-0 text-slate-400/70 hover:text-slate-400" /* Changed to slate */
                             >
                               <ExternalLink className="w-3 h-3" />
                             </Button>
                           </div>
                         </div>
 
-                        <div className="p-3 rounded-lg glass-blue border border-blue-500/20">
+                        <div className="p-3 rounded-lg glass-white border border-slate-500/20">
                           {" "}
-                          {/* Changed to glass-blue */}
-                          <div className="text-sm text-blue-400/70 font-mono">Total Expenses</div>{" "}
-                          {/* Changed to blue */}
-                          <div className="text-xl font-bold neon-blue-text font-mono">
+                          {/* Changed to glass-white */}
+                          <div className="text-sm text-slate-400/70 font-mono">Total Expenses</div>{" "}
+                          {/* Changed to slate */}
+                          <div className="text-xl font-bold neon-white-text font-mono">
                             {" "}
-                            {/* Changed to neon-blue-text */}${selectedGroupData.totalExpenses.toFixed(2)}
+                            {/* Changed to neon-white-text */}${selectedGroupData.totalExpenses.toFixed(2)}
                           </div>
                         </div>
                       </div>
@@ -242,20 +242,20 @@ export function GroupManagement({ onPageChange }: GroupManagementProps) {
                   </Card>
 
                   {/* Members */}
-                  <Card className="glass-blue neon-blue-border">
+                  <Card className="glass-white neon-white-border">
                     {" "}
-                    {/* Changed to glass-blue and neon-blue-border */}
+                    {/* Changed to glass-white and neon-white-border */}
                     <CardHeader>
                       <div className="flex items-center justify-between">
-                        <CardTitle className="neon-blue-text font-mono">
+                        <CardTitle className="neon-white-text font-mono">
                           {" "}
-                          {/* Changed to neon-blue-text */}
+                          {/* Changed to neon-white-text */}
                           Members ({selectedGroupData.members.length})
                         </CardTitle>
                         <Button
                           variant="outline"
                           size="sm"
-                          className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10 font-mono bg-transparent" /* Changed to blue */
+                          className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 font-mono bg-transparent" /* Changed to slate */
                         >
                           <UserPlus className="w-4 h-4 mr-2" />
                           Add Member
@@ -269,7 +269,7 @@ export function GroupManagement({ onPageChange }: GroupManagementProps) {
                           placeholder="Enter wallet address or ENS name..."
                           value={newMemberAddress}
                           onChange={(e) => setNewMemberAddress(e.target.value)}
-                          className="bg-black/50 border-blue-500/30 text-blue-400 placeholder:text-blue-400/50 font-mono" /* Changed to blue */
+                          className="bg-black/50 border-slate-500/30 text-slate-400 placeholder:text-slate-400/50 font-mono" /* Changed to slate */
                         />
                         <Button onClick={handleAddMember} className="btn-matrix font-mono">
                           Add
@@ -281,20 +281,20 @@ export function GroupManagement({ onPageChange }: GroupManagementProps) {
                         {selectedGroupData.members.map((member) => (
                           <div
                             key={member.id}
-                            className="flex items-center justify-between p-3 rounded-lg glass-blue border border-blue-500/20" /* Changed to glass-blue */
+                            className="flex items-center justify-between p-3 rounded-lg glass-white border border-slate-500/20" /* Changed to glass-white */
                           >
                             <div className="flex items-center space-x-3">
-                              <Avatar className="w-10 h-10 bg-gradient-to-r from-blue-500 to-green-500">
+                              <Avatar className="w-10 h-10 bg-gradient-to-r from-slate-500 to-green-500">
                                 {" "}
                                 {/* Mixed gradient */}
                                 <AvatarFallback className="text-black font-semibold">{member.avatar}</AvatarFallback>{" "}
                                 {/* Icon color */}
                               </Avatar>
                               <div>
-                                <p className="font-semibold neon-blue-text font-mono">{member.name}</p>{" "}
-                                {/* Changed to neon-blue-text */}
-                                <p className="text-sm text-blue-400/70 font-mono">{member.address}</p>{" "}
-                                {/* Changed to blue */}
+                                <p className="font-semibold neon-white-text font-mono">{member.name}</p>{" "}
+                                {/* Changed to neon-white-text */}
+                                <p className="text-sm text-slate-400/70 font-mono">{member.address}</p>{" "}
+                                {/* Changed to slate */}
                               </div>
                             </div>
                             <div className="flex items-center space-x-2">
@@ -302,7 +302,7 @@ export function GroupManagement({ onPageChange }: GroupManagementProps) {
                                 className={`font-mono text-xs ${
                                   member.role === "admin"
                                     ? "bg-green-500/30 text-green-200 border-green-500/50"
-                                    : "bg-blue-500/20 text-blue-300 border-blue-500/30" // Changed to blue
+                                    : "bg-slate-500/20 text-slate-300 border-slate-500/30" // Changed to slate
                                 }`}
                               >
                                 {member.role}
@@ -324,58 +324,59 @@ export function GroupManagement({ onPageChange }: GroupManagementProps) {
                   </Card>
 
                   {/* Security Features */}
-                  <Card className="glass-blue neon-blue-border">
+                  <Card className="glass-white neon-white-border">
                     {" "}
-                    {/* Changed to glass-blue and neon-blue-border */}
+                    {/* Changed to glass-white and neon-white-border */}
                     <CardHeader>
-                      <CardTitle className="neon-blue-text font-mono flex items-center">
+                      <CardTitle className="neon-white-text font-mono flex items-center">
                         {" "}
-                        {/* Changed to neon-blue-text */}
-                        <Shield className="w-5 h-5 mr-2 text-blue-400" /> {/* Changed to blue */}
+                        {/* Changed to neon-white-text */}
+                        <Shield className="w-5 h-5 mr-2 text-slate-400" /> {/* Changed to slate */}
                         Security Features
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="p-4 rounded-lg glass-blue border border-blue-500/20">
+                        <div className="p-4 rounded-lg glass-white border border-slate-500/20">
                           {" "}
-                          {/* Changed to glass-blue */}
+                          {/* Changed to glass-white */}
                           <div className="flex items-center space-x-2 mb-2">
-                            <Code className="w-5 h-5 text-blue-400" /> {/* Changed to blue */}
-                            <span className="font-semibold neon-blue-text font-mono">Smart Contract</span>{" "}
-                            {/* Changed to neon-blue-text */}
+                            <Code className="w-5 h-5 text-slate-400" /> {/* Changed to slate */}
+                            <span className="font-semibold neon-white-text font-mono">Smart Contract</span>{" "}
+                            {/* Changed to neon-white-text */}
                           </div>
-                          <p className="text-sm text-blue-400/70 font-mono">
+                          <p className="text-sm text-slate-400/70 font-mono">
                             {" "}
-                            {/* Changed to blue */}
+                            {/* Changed to slate */}
                             Automated expense splitting with cryptographic proof
                           </p>
                         </div>
 
-                        <div className="p-4 rounded-lg glass-blue border border-blue-500/20">
+                        <div className="p-4 rounded-lg glass-white border border-slate-500/20">
                           {" "}
-                          {/* Changed to glass-blue */}
+                          {/* Changed to glass-white */}
                           <div className="flex items-center space-x-2 mb-2">
-                            <Zap className="w-5 h-5 text-blue-400" /> {/* Changed to blue */}
-                            <span className="font-semibold neon-blue-text font-mono">Gas Optimization</span>{" "}
-                            {/* Changed to neon-blue-text */}
+                            <Zap className="w-5 h-5 text-slate-400" /> {/* Changed to slate */}
+                            <span className="font-semibold neon-white-text font-mono">Gas Optimization</span>{" "}
+                            {/* Changed to neon-white-text */}
                           </div>
-                          <p className="text-sm text-blue-400/70 font-mono">
+                          <p className="text-sm text-slate-400/70 font-mono">
                             Layer 2 scaling for minimal transaction costs
                           </p>{" "}
-                          {/* Changed to blue */}
+                          {/* Changed to slate */}
                         </div>
                       </div>
                     </CardContent>
                   </Card>
                 </div>
               ) : (
-                <Card className="glass-blue neon-blue-border h-96 flex items-center justify-center">
+                <Card className="glass-white neon-white-border h-96 flex items-center justify-center">
                   {" "}
-                  {/* Changed to glass-blue and neon-blue-border */}
+                  {/* Changed to glass-white and neon-white-border */}
                   <div className="text-center">
-                    <Users className="w-16 h-16 text-blue-400/50 mx-auto mb-4" /> {/* Changed to blue */}
-                    <p className="text-blue-400/70 font-mono">Select a group to view details</p> {/* Changed to blue */}
+                    <Users className="w-16 h-16 text-slate-400/50 mx-auto mb-4" /> {/* Changed to slate */}
+                    <p className="text-slate-400/70 font-mono">Select a group to view details</p>{" "}
+                    {/* Changed to slate */}
                   </div>
                 </Card>
               )}

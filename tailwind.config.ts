@@ -77,18 +77,18 @@ const config: Config = {
           neon: "#00ff88",
           matrix: "#00ff41",
         },
-        blue: {
-          50: "#eff6ff",
-          100: "#dbeafe",
-          200: "#bfdbfe",
-          300: "#93c5fd",
-          400: "#60a5fa",
-          500: "#3b82f6",
-          600: "#2563eb",
-          700: "#1d4ed8",
-          800: "#1e40af",
-          900: "#1e3a8a",
-          neon: "#3b82f6",
+        slate: {
+          // Adding a slate palette for monochrome elements
+          50: "#f8fafc",
+          100: "#f1f5f9",
+          200: "#e2e8f0",
+          300: "#cbd5e1",
+          400: "#94a3b8",
+          500: "#64748b",
+          600: "#475569",
+          700: "#334155",
+          800: "#1e293b",
+          900: "#0f172a",
         },
       },
       borderRadius: {
@@ -126,18 +126,16 @@ const config: Config = {
           "50%": { opacity: "0.5" },
         },
         "neon-pulse": {
-          // New keyframe for a more dynamic neon glow
           "0%, 100%": {
             boxShadow:
-              "0 0 5px var(--neon-green), 0 0 10px var(--neon-green), 0 0 20px var(--neon-green), 0 0 40px var(--neon-green), 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue)",
+              "0 0 5px var(--neon-green), 0 0 10px var(--neon-green), 0 0 20px var(--neon-green), 0 0 40px var(--neon-green), 0 0 5px var(--neon-white), 0 0 10px var(--neon-white), 0 0 20px var(--neon-white)",
           },
           "50%": {
             boxShadow:
-              "0 0 10px var(--neon-green), 0 0 20px var(--neon-green), 0 0 30px var(--neon-green), 0 0 60px var(--neon-green), 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue), 0 0 30px var(--neon-blue)",
+              "0 0 10px var(--neon-green), 0 0 20px var(--neon-green), 0 0 30px var(--neon-green), 0 0 60px var(--neon-green), 0 0 10px var(--neon-white), 0 0 20px var(--neon-white), 0 0 30px var(--neon-white)",
           },
         },
         "grid-fade": {
-          // New keyframe for a fading grid effect
           "0%": { opacity: "0.1" },
           "50%": { opacity: "0.05" },
           "100%": { opacity: "0.1" },
@@ -151,8 +149,8 @@ const config: Config = {
         "matrix-rain": "matrix-rain 3s linear infinite",
         glow: "glow 2s ease-in-out infinite alternate",
         "pulse-green": "pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "neon-pulse": "neon-pulse 3s ease-in-out infinite alternate", // Apply new neon pulse animation
-        "grid-fade": "grid-fade 5s ease-in-out infinite", // Apply new grid fade animation
+        "neon-pulse": "neon-pulse 3s ease-in-out infinite alternate",
+        "grid-fade": "grid-fade 5s ease-in-out infinite",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

@@ -39,9 +39,9 @@ export function CreateGroupModal({ onClose, onGroupCreated }: CreateGroupModalPr
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md glass-blue neon-blue-border animate-in fade-in-0 zoom-in-95 duration-300">
+      <Card className="w-full max-w-md glass-white neon-white-border animate-in fade-in-0 zoom-in-95 duration-300">
         {" "}
-        {/* Changed to glass-blue and neon-blue-border */}
+        {/* Changed to glass-white and neon-white-border */}
         <CardHeader className="relative">
           <Button
             variant="ghost"
@@ -51,10 +51,10 @@ export function CreateGroupModal({ onClose, onGroupCreated }: CreateGroupModalPr
           >
             <X className="w-4 h-4" />
           </Button>
-          <CardTitle className="neon-blue-text flex items-center font-mono">
+          <CardTitle className="neon-white-text flex items-center font-mono">
             {" "}
-            {/* Changed to neon-blue-text */}
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-lg flex items-center justify-center mr-3">
+            {/* Changed to neon-white-text */}
+            <div className="w-8 h-8 bg-gradient-to-r from-slate-500 to-green-500 rounded-lg flex items-center justify-center mr-3">
               {" "}
               {/* Mixed gradient */}
               <Users className="w-4 h-4 text-black" /> {/* Icon color */}
@@ -65,9 +65,9 @@ export function CreateGroupModal({ onClose, onGroupCreated }: CreateGroupModalPr
         <CardContent className="space-y-6">
           {/* Group Name */}
           <div>
-            <Label htmlFor="groupName" className="text-blue-400 font-mono mb-2 block">
+            <Label htmlFor="groupName" className="text-slate-400 font-mono mb-2 block">
               {" "}
-              {/* Changed to blue */}
+              {/* Changed to slate */}
               Group Name
             </Label>
             <Input
@@ -75,28 +75,28 @@ export function CreateGroupModal({ onClose, onGroupCreated }: CreateGroupModalPr
               placeholder="e.g., Weekend Trip, Office Lunch..."
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
-              className="bg-black/50 border-blue-500/30 text-blue-400 placeholder:text-blue-400/50 font-mono" /* Changed to blue */
+              className="bg-black/50 border-slate-500/30 text-slate-400 placeholder:text-slate-400/50 font-mono" /* Changed to slate */
             />
           </div>
 
           {/* Invite Members */}
           <div>
-            <Label className="text-blue-400 font-mono mb-2 block">Invite Members</Label> {/* Changed to blue */}
+            <Label className="text-slate-400 font-mono mb-2 block">Invite Members</Label> {/* Changed to slate */}
             <div className="flex space-x-2">
               <Input
                 placeholder="Enter wallet address or ENS name"
                 value={inviteAddress}
                 onChange={(e) => setInviteAddress(e.target.value)}
-                className="bg-black/50 border-blue-500/30 text-blue-400 placeholder:text-blue-400/50 font-mono" /* Changed to blue */
+                className="bg-black/50 border-slate-500/30 text-slate-400 placeholder:text-slate-400/50 font-mono" /* Changed to slate */
                 onKeyPress={(e) => e.key === "Enter" && handleAddMember()}
               />
               <Button
                 onClick={handleAddMember}
                 size="sm"
-                className="bg-blue-600 hover:bg-blue-700 text-black font-mono"
+                className="bg-slate-600 hover:bg-slate-700 text-black font-mono"
               >
                 {" "}
-                {/* Changed to blue */}
+                {/* Changed to slate */}
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
@@ -105,16 +105,16 @@ export function CreateGroupModal({ onClose, onGroupCreated }: CreateGroupModalPr
           {/* Invited Members List */}
           {invitedMembers.length > 0 && (
             <div>
-              <Label className="text-blue-400 font-mono mb-2 block">Invited Members ({invitedMembers.length})</Label>{" "}
-              {/* Changed to blue */}
+              <Label className="text-slate-400 font-mono mb-2 block">Invited Members ({invitedMembers.length})</Label>{" "}
+              {/* Changed to slate */}
               <div className="space-y-2 max-h-32 overflow-y-auto">
                 {invitedMembers.map((address, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-2 rounded-lg glass-blue border border-blue-500/20" /* Changed to glass-blue */
+                    className="flex items-center justify-between p-2 rounded-lg glass-white border border-slate-500/20" /* Changed to glass-white */
                   >
                     <div className="flex items-center space-x-2">
-                      <Avatar className="w-6 h-6 bg-gradient-to-r from-blue-500 to-green-500">
+                      <Avatar className="w-6 h-6 bg-gradient-to-r from-slate-500 to-green-500">
                         {" "}
                         {/* Mixed gradient */}
                         <AvatarFallback className="text-black text-xs">
@@ -123,7 +123,7 @@ export function CreateGroupModal({ onClose, onGroupCreated }: CreateGroupModalPr
                           {address.slice(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="text-blue-400 text-sm font-mono">{address}</span> {/* Changed to blue */}
+                      <span className="text-slate-400 text-sm font-mono">{address}</span> {/* Changed to slate */}
                     </div>
                     <Button
                       variant="ghost"

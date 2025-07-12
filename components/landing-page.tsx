@@ -69,7 +69,7 @@ function FloatingCubes() {
           position={[(Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10]}
           scale={0.1}
         >
-          <meshStandardMaterial color="#3b82f6" transparent opacity={0.3} /> {/* Changed to blue */}
+          <meshStandardMaterial color="#ffffff" transparent opacity={0.3} /> {/* Changed to white */}
         </Box>
       ))}
     </group>
@@ -117,7 +117,7 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
       icon: Receipt,
       title: "Smart Expenses",
       description: "AI-powered expense splitting with automatic calculations",
-      color: "from-blue-500 to-blue-400", // Changed to blue
+      color: "from-slate-500 to-slate-400", // Changed to slate
     },
     {
       icon: Lock,
@@ -129,9 +129,9 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
 
   const stats = [
     { label: "Total Volume", value: "$2.4M", icon: DollarSign, color: "from-green-500 to-green-400" }, // Added color
-    { label: "Active Groups", value: "1,247", icon: Users, color: "from-blue-500 to-blue-400" }, // Added color, changed to blue
+    { label: "Active Groups", value: "1,247", icon: Users, color: "from-slate-500 to-slate-400" }, // Added color, changed to slate
     { label: "Settlements", value: "8,932", icon: TrendingUp, color: "from-green-600 to-green-500" }, // Added color
-    { label: "Gas Saved", value: "67%", icon: Zap, color: "from-blue-300 to-blue-200" }, // Added color, changed to blue
+    { label: "Gas Saved", value: "67%", icon: Zap, color: "from-slate-300 to-slate-200" }, // Added color, changed to slate
   ]
 
   // Add the following data structures within the LandingPage component, before the `return` statement:
@@ -147,7 +147,7 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
       icon: Receipt,
       title: "Add Expenses",
       description: "Log expenses and let the smart contract handle the splitting.",
-      color: "from-blue-500 to-blue-400",
+      color: "from-slate-500 to-slate-400",
     },
     {
       icon: DollarSign,
@@ -159,7 +159,7 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
       icon: CheckCircle,
       title: "Track Analytics",
       description: "Gain insights into your spending and group financial health.",
-      color: "from-blue-300 to-blue-200",
+      color: "from-slate-300 to-slate-200",
     },
   ]
 
@@ -224,7 +224,7 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
         <Canvas camera={{ position: [0, 0, 8] }}>
           <ambientLight intensity={0.3} />
           <pointLight position={[10, 10, 10]} color="#00ff88" intensity={0.5} />
-          <pointLight position={[-10, -10, -10]} color="#3b82f6" intensity={0.3} /> {/* Changed to blue */}
+          <pointLight position={[-10, -10, -10]} color="#ffffff" intensity={0.3} /> {/* Changed to white */}
           <MatrixSphere />
           <FloatingCubes />
           <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.5} />
@@ -240,7 +240,7 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
             </div>
             <div>
               <span className="text-2xl font-bold neon-text font-mono">SplitChain</span>
-             
+              <div className="text-xs text-green-400/70 font-mono">v2.0.1-beta</div>
             </div>
           </div>
           <ConnectWalletButton
@@ -339,7 +339,7 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
                   <span className="font-mono">BlockDAG Network</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Globe className="w-5 h-5 text-blue-400" /> {/* Changed to blue */}
+                  <Globe className="w-5 h-5 text-slate-400" /> {/* Changed to slate */}
                   <span className="font-mono">EVM Compatible</span>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -347,7 +347,7 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
                   <span className="font-mono">Layer 2 Scaling</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Network className="w-5 h-5 text-blue-400" /> {/* Changed to blue */}
+                  <Network className="w-5 h-5 text-slate-400" /> {/* Changed to slate */}
                   <span className="font-mono">Cross-Chain Ready</span>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -382,19 +382,19 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
               <h2 className="text-3xl font-bold neon-text mb-12 font-mono">What Our Users Say</h2>
               <div className="grid md:grid-cols-3 gap-8">
                 {testimonials.map((testimonial, index) => (
-                  <Card key={index} className="glass-blue neon-blue-border card-hover">
+                  <Card key={index} className="glass-white neon-white-border card-hover">
                     <CardContent className="p-6 text-center">
-                      <MessageSquare className="w-8 h-8 text-blue-400 mx-auto mb-4" />
-                      <p className="text-blue-300 italic mb-6">"{testimonial.quote}"</p>
+                      <MessageSquare className="w-8 h-8 text-slate-400 mx-auto mb-4" />
+                      <p className="text-slate-300 italic mb-6">"{testimonial.quote}"</p>
                       <div className="flex items-center justify-center space-x-3">
-                        <Avatar className="w-12 h-12 bg-gradient-to-r from-blue-500 to-green-500">
+                        <Avatar className="w-12 h-12 bg-gradient-to-r from-slate-500 to-green-500">
                           <AvatarFallback className="text-black font-semibold">
                             {testimonial.avatarFallback}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-semibold neon-blue-text font-mono">{testimonial.name}</p>
-                          <p className="text-sm text-blue-400/70 font-mono">{testimonial.handle}</p>
+                          <p className="font-semibold neon-white-text font-mono">{testimonial.name}</p>
+                          <p className="text-sm text-slate-400/70 font-mono">{testimonial.handle}</p>
                         </div>
                       </div>
                     </CardContent>

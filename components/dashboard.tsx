@@ -29,7 +29,7 @@ const mockGroups = [
     name: "DeFi Research",
     members: 12,
     balance: 89.25,
-    color: "from-blue-500 to-blue-400", // Changed to blue
+    color: "from-slate-500 to-slate-400", // Changed to slate
     status: "active",
   },
   {
@@ -45,7 +45,7 @@ const mockGroups = [
     name: "DAO Expenses",
     members: 15,
     balance: 234.0,
-    color: "from-blue-300 to-blue-200", // Changed to blue
+    color: "from-slate-300 to-slate-200", // Changed to slate
     status: "active",
   },
 ]
@@ -121,22 +121,22 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
               </CardContent>
             </Card>
 
-            <Card className="glass-blue neon-border card-hover">
+            <Card className="glass-white neon-white-border card-hover">
               {" "}
-              {/* Changed to glass-blue */}
+              {/* Changed to glass-white */}
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-blue-400/70 text-sm font-mono">Active Groups</p> {/* Changed text color */}
-                    <p className="text-2xl font-bold neon-blue-text font-mono">4</p> {/* Changed text color */}
+                    <p className="text-slate-400/70 text-sm font-mono">Active Groups</p> {/* Changed text color */}
+                    <p className="text-2xl font-bold neon-white-text font-mono">4</p> {/* Changed text color */}
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-blue-300 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-r from-slate-400 to-slate-300 rounded-lg flex items-center justify-center">
                     {" "}
                     {/* Changed gradient */}
                     <Users className="w-6 h-6 text-black" />
                   </div>
                 </div>
-                <div className="flex items-center mt-2 text-blue-400 text-sm font-mono">
+                <div className="flex items-center mt-2 text-slate-400 text-sm font-mono">
                   {" "}
                   {/* Changed text color */}
                   <ArrowUpRight className="w-4 h-4 mr-1" />2 new this week
@@ -162,22 +162,22 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
               </CardContent>
             </Card>
 
-            <Card className="glass-blue neon-border card-hover">
+            <Card className="glass-white neon-white-border card-hover">
               {" "}
-              {/* Changed to glass-blue */}
+              {/* Changed to glass-white */}
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-blue-400/70 text-sm font-mono">Settlements</p> {/* Changed text color */}
-                    <p className="text-2xl font-bold neon-blue-text font-mono">23</p> {/* Changed text color */}
+                    <p className="text-slate-400/70 text-sm font-mono">Settlements</p> {/* Changed text color */}
+                    <p className="text-2xl font-bold neon-white-text font-mono">23</p> {/* Changed text color */}
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-300 to-blue-200 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-r from-slate-300 to-slate-200 rounded-lg flex items-center justify-center">
                     {" "}
                     {/* Changed gradient */}
                     <Activity className="w-6 h-6 text-black" />
                   </div>
                 </div>
-                <div className="flex items-center mt-2 text-blue-400 text-sm font-mono">
+                <div className="flex items-center mt-2 text-slate-400 text-sm font-mono">
                   {" "}
                   {/* Changed text color */}
                   <ArrowUpRight className="w-4 h-4 mr-1" />
@@ -230,8 +230,8 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
                   onClick={() => setSelectedGroupFilter("active")}
                   className={
                     selectedGroupFilter === "active"
-                      ? "bg-blue-500 text-black font-mono" // Changed to blue
-                      : "border-blue-500/50 text-blue-400 hover:bg-blue-500/10 font-mono bg-transparent" // Changed to blue
+                      ? "bg-slate-500 text-black font-mono" // Changed to slate
+                      : "border-slate-500/50 text-slate-400 hover:bg-slate-500/10 font-mono bg-transparent" // Changed to slate
                   }
                 >
                   Active
@@ -303,7 +303,7 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
                   >
                     <div className="flex items-center space-x-4">
                       <div
-                        className={`w-2 h-2 rounded-full ${activity.type === "expense" ? "bg-green-400" : "bg-blue-400"}`} // Changed to blue
+                        className={`w-2 h-2 rounded-full ${activity.type === "expense" ? "bg-green-400" : "bg-slate-400"}`} // Changed to slate
                       />
                       <div>
                         <p className="neon-text font-medium font-mono">{activity.description}</p>
@@ -317,7 +317,7 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
                       </div>
                     </div>
                     <span
-                      className={`font-semibold font-mono ${activity.type === "expense" ? "text-green-400" : "text-blue-400"}`} // Changed to blue
+                      className={`font-semibold font-mono ${activity.type === "expense" ? "text-green-400" : "text-slate-400"}`} // Changed to slate
                     >
                       {activity.type === "expense" ? "-" : "+"}${activity.amount.toFixed(2)}
                     </span>

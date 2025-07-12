@@ -82,9 +82,9 @@ export function GroupView({ groupId, onPageChange }: GroupViewProps) {
                   <Users className="w-4 h-4 mr-1" />
                   {mockGroupData.members.length} members
                 </div>
-                <Badge variant="secondary" className="bg-blue-500/20 text-blue-300 border-blue-500/30 font-mono">
+                <Badge variant="secondary" className="bg-slate-500/20 text-slate-300 border-slate-500/30 font-mono">
                   {" "}
-                  {/* Changed to blue */}
+                  {/* Changed to slate */}
                   Active
                 </Badge>
               </div>
@@ -106,7 +106,7 @@ export function GroupView({ groupId, onPageChange }: GroupViewProps) {
                 {/* Themed card */}
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3 mb-3">
-                    <Avatar className="w-10 h-10 bg-gradient-to-r from-blue-500 to-green-500">
+                    <Avatar className="w-10 h-10 bg-gradient-to-r from-slate-500 to-green-500">
                       {" "}
                       {/* Mixed gradient */}
                       <AvatarFallback className="text-black font-semibold">{member.avatar}</AvatarFallback>{" "}
@@ -227,8 +227,8 @@ export function GroupView({ groupId, onPageChange }: GroupViewProps) {
                         onClick={() => setNewExpense({ ...newExpense, splitType: "percentage" })}
                         className={
                           newExpense.splitType === "percentage"
-                            ? "bg-blue-600 text-black font-mono" /* Changed to blue */
-                            : "border-blue-500/50 text-blue-400 hover:bg-blue-500/10 font-mono bg-transparent" /* Changed to blue */
+                            ? "bg-slate-600 text-black font-mono" /* Changed to slate */
+                            : "border-slate-500/50 text-slate-400 hover:bg-slate-500/10 font-mono bg-transparent" /* Changed to slate */
                         }
                       >
                         Percentage
@@ -272,7 +272,7 @@ export function GroupView({ groupId, onPageChange }: GroupViewProps) {
                           className="flex items-center justify-between p-4 rounded-lg glass-green border border-green-500/20" /* Themed card */
                         >
                           <div className="flex items-center space-x-3">
-                            <Avatar className="w-10 h-10 bg-gradient-to-r from-blue-500 to-green-500">
+                            <Avatar className="w-10 h-10 bg-gradient-to-r from-slate-500 to-green-500">
                               {" "}
                               {/* Mixed gradient */}
                               <AvatarFallback className="text-black font-semibold">{member.avatar}</AvatarFallback>{" "}

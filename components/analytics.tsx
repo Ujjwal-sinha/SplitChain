@@ -89,22 +89,22 @@ export function Analytics({ onPageChange }: AnalyticsProps) {
               </CardContent>
             </Card>
 
-            <Card className="glass-blue neon-border card-hover">
+            <Card className="glass-white neon-white-border card-hover">
               {" "}
-              {/* Changed to glass-blue */}
+              {/* Changed to glass-white */}
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-blue-400/70 text-sm font-mono">Active Groups</p> {/* Changed text color */}
-                    <p className="text-2xl font-bold neon-blue-text font-mono">4</p> {/* Changed text color */}
+                    <p className="text-slate-400/70 text-sm font-mono">Active Groups</p> {/* Changed text color */}
+                    <p className="text-2xl font-bold neon-white-text font-mono">4</p> {/* Changed text color */}
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-blue-300 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-r from-slate-400 to-slate-300 rounded-lg flex items-center justify-center">
                     {" "}
                     {/* Changed gradient */}
                     <Users className="w-6 h-6 text-black" />
                   </div>
                 </div>
-                <div className="flex items-center mt-2 text-blue-400 text-sm font-mono">
+                <div className="flex items-center mt-2 text-slate-400 text-sm font-mono">
                   {" "}
                   {/* Changed text color */}
                   <TrendingUp className="w-4 h-4 mr-1" />2 new this month
@@ -130,23 +130,23 @@ export function Analytics({ onPageChange }: AnalyticsProps) {
               </CardContent>
             </Card>
 
-            <Card className="glass-blue neon-border card-hover">
+            <Card className="glass-white neon-white-border card-hover">
               {" "}
-              {/* Changed to glass-blue */}
+              {/* Changed to glass-white */}
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-blue-400/70 text-sm font-mono">Avg. Settlement Time</p>{" "}
+                    <p className="text-slate-400/70 text-sm font-mono">Avg. Settlement Time</p>{" "}
                     {/* Changed text color */}
-                    <p className="text-2xl font-bold neon-blue-text font-mono">2.3d</p> {/* Changed text color */}
+                    <p className="text-2xl font-bold neon-white-text font-mono">2.3d</p> {/* Changed text color */}
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-300 to-blue-200 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-r from-slate-300 to-slate-200 rounded-lg flex items-center justify-center">
                     {" "}
                     {/* Changed gradient */}
                     <Clock className="w-6 h-6 text-black" />
                   </div>
                 </div>
-                <div className="flex items-center mt-2 text-blue-400 text-sm font-mono">
+                <div className="flex items-center mt-2 text-slate-400 text-sm font-mono">
                   {" "}
                   {/* Changed text color */}
                   <TrendingUp className="w-4 h-4 mr-1" />
@@ -180,12 +180,12 @@ export function Analytics({ onPageChange }: AnalyticsProps) {
               </CardContent>
             </Card>
 
-            <Card className="glass-blue neon-border">
+            <Card className="glass-white neon-white-border">
               {" "}
-              {/* Changed to glass-blue */}
+              {/* Changed to glass-white */}
               <CardHeader>
-                <CardTitle className="neon-blue-text font-mono">Expenses by Group</CardTitle>{" "}
-                {/* Changed to neon-blue-text */}
+                <CardTitle className="neon-white-text font-mono">Expenses by Group</CardTitle>{" "}
+                {/* Changed to neon-white-text */}
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -209,7 +209,7 @@ export function Analytics({ onPageChange }: AnalyticsProps) {
                   {groupData.map((group, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: group.color }} />
-                      <span className="text-sm text-blue-300 font-mono">{group.name}</span> {/* Changed to blue */}
+                      <span className="text-sm text-slate-300 font-mono">{group.name}</span> {/* Changed to slate */}
                     </div>
                   ))}
                 </div>

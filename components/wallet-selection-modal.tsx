@@ -196,9 +196,9 @@ export function WalletSelectionModal({ onClose, onWalletConnected, isConnected =
   if (isConnected && address) {
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
-        <Card className="w-full max-w-md glass-blue neon-blue-border animate-in fade-in-0 zoom-in-95 duration-300 mx-auto my-auto">
+        <Card className="w-full max-w-md glass-white neon-white-border animate-in fade-in-0 zoom-in-95 duration-300 mx-auto my-auto">
           {" "}
-          {/* Changed to glass-blue and neon-blue-border */}
+          {/* Changed to glass-white and neon-white-border */}
           <CardHeader className="relative">
             <Button
               variant="ghost"
@@ -208,10 +208,10 @@ export function WalletSelectionModal({ onClose, onWalletConnected, isConnected =
             >
               <X className="w-4 h-4" />
             </Button>
-            <CardTitle className="neon-blue-text flex items-center font-mono">
+            <CardTitle className="neon-white-text flex items-center font-mono">
               {" "}
-              {/* Changed to neon-blue-text */}
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-lg flex items-center justify-center mr-3">
+              {/* Changed to neon-white-text */}
+              <div className="w-8 h-8 bg-gradient-to-r from-slate-500 to-green-500 rounded-lg flex items-center justify-center mr-3">
                 {" "}
                 {/* Mixed gradient */}
                 <Wallet className="w-4 h-4 text-black" /> {/* Icon color */}
@@ -221,26 +221,26 @@ export function WalletSelectionModal({ onClose, onWalletConnected, isConnected =
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Wallet Info */}
-            <div className="p-4 rounded-lg glass-blue border border-blue-500/20">
+            <div className="p-4 rounded-lg glass-white border border-slate-500/20">
               {" "}
-              {/* Changed to glass-blue */}
+              {/* Changed to glass-white */}
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-green-400 rounded-full" />
-                  <span className="neon-blue-text font-medium font-mono">{ensName || formatAddress(address)}</span>{" "}
-                  {/* Changed to neon-blue-text */}
+                  <span className="neon-white-text font-medium font-mono">{ensName || formatAddress(address)}</span>{" "}
+                  {/* Changed to neon-white-text */}
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={copyAddress}
-                  className="h-6 w-6 p-0 text-blue-400/70 hover:text-blue-400" /* Changed to blue */
+                  className="h-6 w-6 p-0 text-slate-400/70 hover:text-slate-400" /* Changed to slate */
                 >
                   <Copy className="w-3 h-3" />
                 </Button>
               </div>
-              <div className="text-sm text-blue-400/70 font-mono mb-2">Balance: {balance} ETH</div>{" "}
-              {/* Changed to blue */}
+              <div className="text-sm text-slate-400/70 font-mono mb-2">Balance: {balance} ETH</div>{" "}
+              {/* Changed to slate */}
               <div className="flex items-center justify-between">
                 <Badge
                   className={`font-mono ${
@@ -255,7 +255,7 @@ export function WalletSelectionModal({ onClose, onWalletConnected, isConnected =
                   <Button
                     size="sm"
                     onClick={handleSwitchToBlockDAG}
-                    className="bg-blue-600 hover:bg-blue-700 text-black text-xs px-2 py-1 h-6 font-mono" /* Changed to blue */
+                    className="bg-slate-600 hover:bg-slate-700 text-black text-xs px-2 py-1 h-6 font-mono" /* Changed to slate */
                   >
                     Switch to BlockDAG
                   </Button>
@@ -267,7 +267,7 @@ export function WalletSelectionModal({ onClose, onWalletConnected, isConnected =
             <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="outline"
-                className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10 bg-transparent font-mono" /* Changed to blue */
+                className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 bg-transparent font-mono" /* Changed to slate */
                 onClick={() => window.open(`https://explorer.blockdag.network/address/${address}`, "_blank")}
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
@@ -275,26 +275,26 @@ export function WalletSelectionModal({ onClose, onWalletConnected, isConnected =
               </Button>
               <Button
                 variant="outline"
-                className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10 bg-transparent font-mono"
+                className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 bg-transparent font-mono"
               >
                 {" "}
-                {/* Changed to blue */}
+                {/* Changed to slate */}
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
               </Button>
             </div>
 
             {/* Security Notice */}
-            <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+            <div className="p-3 rounded-lg bg-slate-500/10 border border-slate-500/20">
               {" "}
-              {/* Changed to blue */}
+              {/* Changed to slate */}
               <div className="flex items-start space-x-2">
-                <Shield className="w-4 h-4 text-blue-400 mt-0.5" /> {/* Changed to blue */}
+                <Shield className="w-4 h-4 text-slate-400 mt-0.5" /> {/* Changed to slate */}
                 <div>
-                  <p className="text-sm text-blue-300 font-medium font-mono">Secure Connection</p>{" "}
-                  {/* Changed to blue */}
-                  <p className="text-xs text-blue-400/80 font-mono">Your wallet is connected securely to SplitChain</p>{" "}
-                  {/* Changed to blue */}
+                  <p className="text-sm text-slate-300 font-medium font-mono">Secure Connection</p>{" "}
+                  {/* Changed to slate */}
+                  <p className="text-xs text-slate-400/80 font-mono">Your wallet is connected securely to SplitChain</p>{" "}
+                  {/* Changed to slate */}
                 </div>
               </div>
             </div>
@@ -323,9 +323,9 @@ export function WalletSelectionModal({ onClose, onWalletConnected, isConnected =
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 overflow-y-auto">
       <div className="w-full max-w-lg mx-auto my-8">
-        <Card className="glass-blue neon-blue-border animate-in fade-in-0 zoom-in-95 duration-300">
+        <Card className="glass-white neon-white-border animate-in fade-in-0 zoom-in-95 duration-300">
           {" "}
-          {/* Changed to glass-blue and neon-blue-border */}
+          {/* Changed to glass-white and neon-white-border */}
           <CardHeader className="relative pb-4">
             <Button
               variant="ghost"
@@ -335,19 +335,19 @@ export function WalletSelectionModal({ onClose, onWalletConnected, isConnected =
             >
               <X className="w-4 h-4" />
             </Button>
-            <CardTitle className="neon-blue-text flex items-center text-xl font-mono">
+            <CardTitle className="neon-white-text flex items-center text-xl font-mono">
               {" "}
-              {/* Changed to neon-blue-text */}
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-lg flex items-center justify-center mr-3">
+              {/* Changed to neon-white-text */}
+              <div className="w-8 h-8 bg-gradient-to-r from-slate-500 to-green-500 rounded-lg flex items-center justify-center mr-3">
                 {" "}
                 {/* Mixed gradient */}
                 <Wallet className="w-4 h-4 text-black" /> {/* Icon color */}
               </div>
               Connect Wallet
             </CardTitle>
-            <p className="text-blue-400/70 text-sm mt-2 font-mono">
+            <p className="text-slate-400/70 text-sm mt-2 font-mono">
               {" "}
-              {/* Changed to blue */}
+              {/* Changed to slate */}
               Connect your wallet to start using SplitChain for decentralized expense sharing.
             </p>
           </CardHeader>
@@ -387,27 +387,28 @@ export function WalletSelectionModal({ onClose, onWalletConnected, isConnected =
 
             {/* Wallet Options */}
             <div className="space-y-2">
-              <h3 className="text-sm font-medium text-blue-300 mb-3 font-mono">Choose your wallet:</h3>{" "}
-              {/* Changed to blue */}
+              <h3 className="text-sm font-medium text-slate-300 mb-3 font-mono">Choose your wallet:</h3>{" "}
+              {/* Changed to slate */}
               {walletOptions.map((wallet) => (
                 <Button
                   key={wallet.id}
                   onClick={() => handleWalletConnect(wallet.id)}
                   disabled={connecting === wallet.id || !wallet.installed}
-                  className="w-full justify-between p-4 h-auto glass-blue hover:glass-blue-strong border border-blue-500/20 hover:border-blue-500/40 text-blue-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-mono" /* Changed to blue */
+                  className="w-full justify-between p-4 h-auto glass-white hover:glass-white-strong border border-slate-500/20 hover:border-slate-500/40 text-slate-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-mono" /* Changed to slate */
                   variant="ghost"
                 >
                   <div className="flex items-center space-x-3">
                     <span className="text-2xl flex-shrink-0">{wallet.icon}</span>
                     <div className="text-left">
                       <div className="flex items-center space-x-2">
-                        <p className="font-medium neon-blue-text font-mono">{wallet.name}</p>{" "}
-                        {/* Changed to neon-blue-text */}
+                        <p className="font-medium neon-white-text font-mono">{wallet.name}</p>{" "}
+                        {/* Changed to neon-white-text */}
                         {wallet.detected && (
                           <div className="w-2 h-2 bg-green-400 rounded-full flex-shrink-0" title="Detected" />
                         )}
                       </div>
-                      <p className="text-xs text-blue-400/70 font-mono">{wallet.description}</p> {/* Changed to blue */}
+                      <p className="text-xs text-slate-400/70 font-mono">{wallet.description}</p>{" "}
+                      {/* Changed to slate */}
                     </div>
                   </div>
                   <div className="flex items-center space-x-2 flex-shrink-0">
@@ -422,7 +423,7 @@ export function WalletSelectionModal({ onClose, onWalletConnected, isConnected =
                       </Badge>
                     )}
                     {connecting === wallet.id && (
-                      <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                      <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin flex-shrink-0" />
                     )}
                   </div>
                 </Button>
@@ -430,15 +431,15 @@ export function WalletSelectionModal({ onClose, onWalletConnected, isConnected =
             </div>
 
             {/* BlockDAG Info */}
-            <div className="p-3 rounded-lg bg-gradient-to-r from-blue-500/10 to-green-500/10 border border-blue-500/20 mt-4">
+            <div className="p-3 rounded-lg bg-gradient-to-r from-slate-500/10 to-green-500/10 border border-slate-500/20 mt-4">
               {" "}
               {/* Mixed gradient */}
               <div className="flex items-start space-x-2">
-                <Zap className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" /> {/* Changed to blue */}
+                <Zap className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" /> {/* Changed to slate */}
                 <div>
-                  <p className="text-sm text-blue-300 font-medium font-mono">Powered by BlockDAG</p>{" "}
-                  {/* Changed to blue */}
-                  <p className="text-xs text-blue-400/80 font-mono">
+                  <p className="text-sm text-slate-300 font-medium font-mono">Powered by BlockDAG</p>{" "}
+                  {/* Changed to slate */}
+                  <p className="text-xs text-slate-400/80 font-mono">
                     Fast, secure, and low-cost transactions on the BlockDAG network
                   </p>
                 </div>

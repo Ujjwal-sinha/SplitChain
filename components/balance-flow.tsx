@@ -49,7 +49,7 @@ function FlowingParticles() {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" count={particleCount} array={positions} itemSize={3} />
       </bufferGeometry>
-      <pointsMaterial size={0.05} color="#3b82f6" transparent opacity={0.8} />
+      <pointsMaterial size={0.05} color="#ffffff" transparent opacity={0.8} /> {/* Changed to white */}
     </points>
   )
 }
@@ -72,3 +72,4 @@ export function BalanceFlow() {
     </div>
   )
 }
+
