@@ -24,7 +24,11 @@ export default function SplitChainApp() {
   }
 
   const handlePageChange = (page: "landing" | "dashboard" | "group" | "analytics" | "settings") => {
-    if (page === "group") {
+    if (page === "dashboard") {
+      // When navigating to dashboard via the button, simulate wallet connection
+      setIsWalletConnected(true)
+      setCurrentPage("dashboard")
+    } else if (page === "group") {
       // If navigating to group page, show group management instead
       setCurrentPage("group")
     } else {

@@ -4,30 +4,119 @@
 
 @layer base {
   :root {
-    --background: 0 0% 0%;
-    --foreground: 120 100% 85%;
-    --card: 0 0% 5%;
-    --card-foreground: 120 100% 85%;
-    --popover: 0 0% 5%;
-    --popover-foreground: 120 100% 85%;
-    --primary: 120 100% 50%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 120 20% 10%;
-    --secondary-foreground: 120 100% 85%;
-    --muted: 120 20% 10%;
-    --muted-foreground: 120 20% 65%;
-    --accent: 120 20% 15%;
-    --accent-foreground: 120 100% 85%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 120 100% 85%;
-    --border: 120 20% 15%;
-    --input: 120 20% 15%;
-    --ring: 120 100% 50%;
-    --radius: 0.75rem;
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 355.7 100% 97.3%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 142.4 71.8% 29.2%;
 
-    /* Custom Neon Colors for CSS variables */
-    --neon-green: #00ff88;
-    --neon-white: #ffffff; /* New white neon color */
+    --radius: 0.5rem;
+
+    /* Custom Neon Green Palette */
+    --neon-green-50: 120 100% 95%;
+    --neon-green-100: 120 100% 90%;
+    --neon-green-200: 120 100% 80%;
+    --neon-green-300: 120 100% 70%;
+    --neon-green-400: 120 100% 60%;
+    --neon-green-500: 120 100% 50%;
+    --neon-green-600: 120 100% 40%;
+    --neon-green-700: 120 100% 30%;
+    --neon-green-800: 120 100% 20%;
+    --neon-green-900: 120 100% 10%;
+
+    /* Custom White/Slate Palette */
+    --neon-white-50: 0 0% 98%;
+    --neon-white-100: 0 0% 95%;
+    --neon-white-200: 0 0% 90%;
+    --neon-white-300: 0 0% 85%;
+    --neon-white-400: 0 0% 80%;
+    --neon-white-500: 0 0% 75%;
+    --neon-white-600: 0 0% 70%;
+    --neon-white-700: 0 0% 65%;
+    --neon-white-800: 0 0% 60%;
+    --neon-white-900: 0 0% 55%;
+
+    --slate-50: 210 40% 96.1%;
+    --slate-100: 210 40% 92.1%;
+    --slate-200: 214.3 31.8% 91.4%;
+    --slate-300: 215 20.4% 86.5%;
+    --slate-400: 217.2 11.3% 74.3%;
+    --slate-500: 217.2 32.6% 17.5%;
+    --slate-600: 218 33.3% 13.9%;
+    --slate-700: 222.2 47.4% 11.2%;
+    --slate-800: 222.2 84% 4.9%;
+    --slate-900: 222.2 84% 4.9%;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 355.7 100% 97.3%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 142.4 71.8% 29.2%;
+
+    /* Custom Neon Green Palette */
+    --neon-green-50: 120 100% 95%;
+    --neon-green-100: 120 100% 90%;
+    --neon-green-200: 120 100% 80%;
+    --neon-green-300: 120 100% 70%;
+    --neon-green-400: 120 100% 60%;
+    --neon-green-500: 120 100% 50%;
+    --neon-green-600: 120 100% 40%;
+    --neon-green-700: 120 100% 30%;
+    --neon-green-800: 120 100% 20%;
+    --neon-green-900: 120 100% 10%;
+
+    /* Custom White/Slate Palette */
+    --neon-white-50: 0 0% 98%;
+    --neon-white-100: 0 0% 95%;
+    --neon-white-200: 0 0% 90%;
+    --neon-white-300: 0 0% 85%;
+    --neon-white-400: 0 0% 80%;
+    --neon-white-500: 0 0% 75%;
+    --neon-white-600: 0 0% 70%;
+    --neon-white-700: 0 0% 65%;
+    --neon-white-800: 0 0% 60%;
+    --neon-white-900: 0 0% 55%;
+
+    --slate-50: 210 40% 96.1%;
+    --slate-100: 210 40% 92.1%;
+    --slate-200: 214.3 31.8% 91.4%;
+    --slate-300: 215 20.4% 86.5%;
+    --slate-400: 217.2 11.3% 74.3%;
+    --slate-500: 217.2 32.6% 17.5%;
+    --slate-600: 218 33.3% 13.9%;
+    --slate-700: 222.2 47.4% 11.2%;
+    --slate-800: 222.2 84% 4.9%;
+    --slate-900: 222.2 84% 4.9%;
   }
 }
 
@@ -36,128 +125,83 @@
     @apply border-border;
   }
   body {
-    @apply bg-black text-green-400;
-    font-feature-settings: "rlig" 1, "calt" 1;
-    font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace;
+    @apply bg-background text-foreground;
   }
 }
 
-/* Matrix-style background */
+/* Custom styles for the digital grid background */
 .matrix-bg {
-  background: #000000; /* Solid black background */
-  position: relative;
-  overflow: hidden;
-  background-image: linear-gradient(rgba(0, 255, 136, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 136, 0.1) 1px, transparent 1px);
-  background-size: 20px 20px;
+  background-color: #0a0a0a; /* Dark background */
+  background-image: radial-gradient(rgba(0, 255, 136, 0.1) 1px, transparent 1px),
+    radial-gradient(rgba(0, 255, 136, 0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
 }
 
-/* Neon glow effects */
-.neon-glow {
-  box-shadow:
-    0 0 5px var(--neon-green), 0 0 10px var(--neon-green), 0 0 20px var(--neon-green), 0 0 40px var(--neon-green),
-    0 0 5px var(--neon-white), 0 0 10px var(--neon-white), 0 0 20px var(--neon-white); /* Updated to neon-white */
-  animation: neon-pulse 3s ease-in-out infinite alternate;
+/* Glassmorphism effect */
+.glass-green {
+  background-color: rgba(0, 255, 136, 0.05); /* Green tint */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  box-shadow: 0 4px 30px rgba(0, 255, 136, 0.1);
 }
 
+.glass-white {
+  background-color: rgba(255, 255, 255, 0.05); /* White tint */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 30px rgba(255, 255, 255, 0.1);
+}
+
+/* Neon text effect */
 .neon-text {
-  color: var(--neon-green);
-  text-shadow: 0 0 5px var(--neon-green), 0 0 10px var(--neon-green), 0 0 20px var(--neon-green);
+  text-shadow: 0 0 5px hsl(var(--neon-green-300)), 0 0 10px hsl(var(--neon-green-400)), 0 0 20px
+    hsl(var(--neon-green-500)), 0 0 40px hsl(var(--neon-green-600));
+  color: hsl(var(--neon-green-200));
 }
 
 .neon-white-text {
-  /* New class for white neon text */
-  color: var(--neon-white);
-  text-shadow: 0 0 5px var(--neon-white), 0 0 10px var(--neon-white), 0 0 20px var(--neon-white);
+  text-shadow: 0 0 5px hsl(var(--neon-white-300)), 0 0 10px hsl(var(--neon-white-400)), 0 0 20px
+    hsl(var(--neon-white-500)), 0 0 40px hsl(var(--neon-white-600));
+  color: hsl(var(--neon-white-200));
 }
 
+/* Neon border effect */
 .neon-border {
-  border: 1px solid var(--neon-green);
-  box-shadow: 0 0 5px rgba(0, 255, 136, 0.5), inset 0 0 5px rgba(0, 255, 136, 0.2);
+  border: 1px solid hsl(var(--neon-green-500));
+  box-shadow: 0 0 5px hsl(var(--neon-green-300)), 0 0 10px hsl(var(--neon-green-400));
 }
 
 .neon-white-border {
-  /* New class for white neon border */
-  border: 1px solid var(--neon-white);
-  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5), inset 0 0 5px rgba(255, 255, 255, 0.2);
+  border: 1px solid hsl(var(--neon-white-500));
+  box-shadow: 0 0 5px hsl(var(--neon-white-300)), 0 0 10px hsl(var(--neon-white-400));
 }
 
-/* Glassmorphism with green tint */
-.glass-green {
-  background: rgba(0, 255, 136, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 255, 136, 0.2);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+/* Neon glow effect for hover/active states */
+.neon-glow {
+  box-shadow: 0 0 8px hsl(var(--neon-green-400)), 0 0 16px hsl(var(--neon-green-500));
+  transition: box-shadow 0.3s ease-in-out;
 }
 
-.glass-green-strong {
-  background: rgba(0, 255, 136, 0.1);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 255, 136, 0.3);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+.neon-glow-white {
+  box-shadow: 0 0 8px hsl(var(--neon-white-400)), 0 0 16px hsl(var(--neon-white-500));
+  transition: box-shadow 0.3s ease-in-out;
 }
 
-/* Glassmorphism with white tint (formerly blue) */
-.glass-white {
-  /* New class for white glassmorphism */
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.card-hover:hover {
+  @apply neon-glow;
 }
 
-.glass-white-strong {
-  /* New class for strong white glassmorphism */
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.5);
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 136, 0.5);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 136, 0.7);
-}
-
-/* Terminal-style effects */
-.terminal {
-  font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace;
-  background: rgba(0, 0, 0, 0.9);
-  border: 1px solid #00ff88;
-  color: #00ff88;
-}
-
-.terminal::before {
-  content: "> ";
-  color: #00ff88;
-}
-
-/* Hover effects */
-.hover-glow:hover {
-  box-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green), 0 0 30px var(--neon-green);
-  transition: all 0.3s ease;
-}
-
-/* Button styles */
+/* Custom button styles */
 .btn-matrix {
-  background: linear-gradient(45deg, transparent, rgba(0, 255, 136, 0.1), transparent);
-  border: 1px solid var(--neon-green);
-  color: var(--neon-green);
+  background: linear-gradient(45deg, hsl(var(--neon-green-500)), hsl(var(--neon-green-400)));
+  color: black;
+  font-weight: bold;
   position: relative;
   overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .btn-matrix::before {
@@ -167,49 +211,74 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.2), rgba(255, 255, 255, 0.2), transparent); /* Updated to white */
-  transition: left 0.5s;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: all 0.5s ease;
 }
 
 .btn-matrix:hover::before {
   left: 100%;
 }
 
-/* Loading animation */
-.loading-matrix {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(0, 255, 136, 0.3);
-  border-radius: 50%;
-  border-top-color: #00ff88;
-  animation: spin 1s ease-in-out infinite;
+.btn-matrix:hover {
+  box-shadow: 0 0 10px hsl(var(--neon-green-400)), 0 0 20px hsl(var(--neon-green-500));
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+/* Matrix Rain Effect */
+.matrix-rain {
+  position: absolute;
+  font-family: "Matrix Code", monospace; /* You might need to import a specific font */
+  font-size: 1rem;
+  color: #00ff88; /* Green color */
+  opacity: 0.1;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+  animation: matrix-fall linear infinite;
+}
+
+@keyframes matrix-fall {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
   }
 }
 
-/* Card animations */
-.card-hover {
-  transition: all 0.3s ease;
+/* Custom animations */
+@keyframes pulse-green {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(0, 255, 136, 0);
+  }
 }
 
-.card-hover:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 255, 136, 0.3);
+.animate-pulse-green {
+  animation: pulse-green 2s infinite;
 }
 
-/* Text effects */
-.text-matrix {
-  background: linear-gradient(45deg, var(--neon-green), #00ff41, var(--neon-green));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+@keyframes fade-in-out {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
 }
 
-.text-glow {
-  text-shadow: 0 0 10px var(--neon-green);
+.animate-fade-in-out {
+  animation: fade-in-out 5s infinite; /* Adjust duration as needed */
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
 import { OrbitControls, Sphere, MeshDistortMaterial, Box } from "@react-three/drei"
 import { Button } from "@/components/ui/button"
@@ -21,7 +21,6 @@ import {
   LayoutDashboard,
 } from "lucide-react"
 import type * as THREE from "three"
-// Add the following imports at the top of the file, alongside existing imports:
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { MessageSquare, Lightbulb, CheckCircle } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -105,6 +104,21 @@ interface LandingPageProps {
 
 export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps) {
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null)
+  const [currentInfoIndex, setCurrentInfoIndex] = useState(0)
+
+  const infoMessages = [
+    "Decentralized Expense Sharing",
+    "Gasless Transactions on BlockDAG",
+    "Trustless Settlements",
+    "AI-Powered Expense Splitting",
+  ]
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentInfoIndex((prevIndex) => (prevIndex + 1) % infoMessages.length)
+    }, 5000) // Change message every 5 seconds
+    return () => clearInterval(interval)
+  }, [infoMessages.length])
 
   const features = [
     {
@@ -133,8 +147,6 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
     { label: "Settlements", value: "8,932", icon: TrendingUp, color: "from-green-600 to-green-500" }, // Added color
     { label: "Gas Saved", value: "67%", icon: Zap, color: "from-slate-300 to-slate-200" }, // Added color, changed to slate
   ]
-
-  // Add the following data structures within the LandingPage component, before the `return` statement:
 
   const howItWorksSteps = [
     {
@@ -243,11 +255,7 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
               <div className="text-xs text-green-400/70 font-mono">v2.0.1-beta</div>
             </div>
           </div>
-          <ConnectWalletButton
-            onConnect={onWalletConnect}
-            variant="outline"
-            className="neon-border bg-transparent hover:bg-green-500/10 text-green-400"
-          />
+          <div className="text-green-300 font-mono text-lg animate-fade-in-out">{infoMessages[currentInfoIndex]}</div>
         </header>
 
         {/* Hero Section */}
