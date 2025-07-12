@@ -1,380 +1,294 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-/**
- * @title SplitChainCore
- * @dev Core contract for decentralized expense sharing on BlockDAG
- */
-contract SplitChainCore is ReentrancyGuard, Ownable {
-    using SafeERC20 for IERC20;
-
-    // Events
-    event GroupCreated(uint256 indexed groupId, address indexed creator, string name);
-    event MemberAdded(uint256 indexed groupId, address indexed member);
-    event MemberRemoved(uint256 indexed groupId, address indexed member);
-    event ExpenseAdded(uint256 indexed groupId, uint256 indexed expenseId, address indexed payer, uint256 amount);
-    event ExpenseSettled(uint256 indexed groupId, uint256 indexed expenseId, address indexed settler, uint256 amount);
-    event DebtSettled(uint256 indexed groupId, address indexed debtor, address indexed creditor, uint256 amount);
-
+contract SplitChainCore is Ownable, ReentrancyGuard {
     // Structs
     struct Group {
-        uint256 id;
         string name;
-        address creator;
         address[] members;
-        mapping(address => bool) isMember;
-        mapping(address => uint256) memberIndex;
-        uint256 expenseCount;
-        bool isActive;
-        uint256 createdAt;
+        uint256 nextExpenseId;
+        mapping(uint256 => Expense) expenses;
+        mapping(address => mapping(address => int256)) balances; // owedBy => owesTo => amount
     }
 
     struct Expense {
         uint256 id;
-        uint256 groupId;
         string description;
-        uint256 totalAmount;
         address payer;
-        address[] participants;
-        mapping(address => uint256) shares;
-        mapping(address => bool) hasSettled;
-        address tokenAddress; // address(0) for ETH
-        uint256 createdAt;
-        bool isSettled;
+        uint256 amount; // Total amount of the expense
+        address tokenAddress; // 0x0 for native currency, otherwise ERC20 token address
+        mapping(address => uint256) shares; // member => share amount
+        address[] participants; // List of participants for iteration
+        bool settled;
     }
 
     struct Balance {
-        mapping(address => int256) balances; // positive = owed to user, negative = user owes
+        mapping(address => int256) owedBy; // user => amount owed by this user to others
+        mapping(address => int256) owesTo; // user => amount this user owes to others
     }
 
     // State variables
-    uint256 public groupCounter;
-    uint256 public expenseCounter;
-    
+    uint256 public nextGroupId;
     mapping(uint256 => Group) public groups;
-    mapping(uint256 => Expense) public expenses;
-    mapping(uint256 => Balance) internal groupBalances; // Changed from public to internal
-    mapping(address => uint256[]) public userGroups;
-    
-    // Platform fee (in basis points, 100 = 1%)
-    uint256 public platformFee = 50; // 0.5%
+    mapping(address => uint256[]) public userGroups; // user => list of group IDs they are part of
+
+    // Platform fee
+    uint256 public platformFeeBasisPoints; // e.g., 100 = 1%
     address public feeRecipient;
 
-    constructor() {
-        feeRecipient = msg.sender;
+    // Events
+    event GroupCreated(uint256 indexed groupId, string name, address indexed creator);
+    event MemberAdded(uint256 indexed groupId, address indexed member);
+    event MemberRemoved(uint256 indexed groupId, address indexed member);
+    event ExpenseAdded(uint256 indexed groupId, uint256 indexed expenseId, string description, address indexed payer, uint256 amount, address tokenAddress);
+    event DebtSettled(uint256 indexed groupId, address indexed payer, address indexed receiver, uint256 amount, address tokenAddress, uint256 feeAmount);
+    event PlatformFeeUpdated(uint256 oldFee, uint256 newFee);
+    event FeeRecipientUpdated(address oldRecipient, address newRecipient);
+
+    constructor(uint256 _initialFeeBasisPoints, address _initialFeeRecipient) Ownable(msg.sender) {
+        require(_initialFeeBasisPoints <= 10000, "Fee cannot exceed 100%");
+        platformFeeBasisPoints = _initialFeeBasisPoints;
+        feeRecipient = _initialFeeRecipient;
+        nextGroupId = 1;
     }
 
-    // Modifiers
-    modifier onlyGroupMember(uint256 groupId) {
-        require(groups[groupId].isMember[msg.sender], "Not a group member");
-        _;
-    }
-
-    modifier groupExists(uint256 groupId) {
-        require(groups[groupId].id != 0, "Group does not exist");
-        _;
-    }
-
-    modifier expenseExists(uint256 expenseId) {
-        require(expenses[expenseId].id != 0, "Expense does not exist");
-        _;
-    }
-
-    // Group Management Functions
-    function createGroup(string memory name, address[] memory initialMembers) external returns (uint256) {
-        require(bytes(name).length > 0, "Group name cannot be empty");
-        
-        groupCounter++;
-        uint256 groupId = groupCounter;
-        
-        Group storage newGroup = groups[groupId];
-        newGroup.id = groupId;
-        newGroup.name = name;
-        newGroup.creator = msg.sender;
-        newGroup.isActive = true;
-        newGroup.createdAt = block.timestamp;
-        
-        // Add creator as first member
-        _addMemberToGroup(groupId, msg.sender);
-        
-        // Add initial members
-        for (uint256 i = 0; i < initialMembers.length; i++) {
-            if (initialMembers[i] != msg.sender && initialMembers[i] != address(0)) {
-                _addMemberToGroup(groupId, initialMembers[i]);
-            }
-        }
-        
-        emit GroupCreated(groupId, msg.sender, name);
-        return groupId;
-    }
-
-    function addMember(uint256 groupId, address member) external groupExists(groupId) onlyGroupMember(groupId) {
-        require(member != address(0), "Invalid member address");
-        require(!groups[groupId].isMember[member], "Already a member");
-        
-        _addMemberToGroup(groupId, member);
-        emit MemberAdded(groupId, member);
-    }
-
-    function removeMember(uint256 groupId, address member) external groupExists(groupId) {
-        require(
-            msg.sender == groups[groupId].creator || msg.sender == member,
-            "Only creator or member can remove"
-        );
-        require(groups[groupId].isMember[member], "Not a member");
-        
-        _removeMemberFromGroup(groupId, member);
-        emit MemberRemoved(groupId, member);
-    }
-
-    function _addMemberToGroup(uint256 groupId, address member) internal {
-        Group storage group = groups[groupId];
-        group.members.push(member);
-        group.isMember[member] = true;
-        group.memberIndex[member] = group.members.length - 1;
-        userGroups[member].push(groupId);
-    }
-
-    function _removeMemberFromGroup(uint256 groupId, address member) internal {
-        Group storage group = groups[groupId];
-        uint256 index = group.memberIndex[member];
-        uint256 lastIndex = group.members.length - 1;
-        
-        if (index != lastIndex) {
-            address lastMember = group.members[lastIndex];
-            group.members[index] = lastMember;
-            group.memberIndex[lastMember] = index;
-        }
-        
-        group.members.pop();
-        delete group.isMember[member];
-        delete group.memberIndex[member];
-        
-        // Remove from user groups
-        uint256[] storage userGroupList = userGroups[member];
-        for (uint256 i = 0; i < userGroupList.length; i++) {
-            if (userGroupList[i] == groupId) {
-                userGroupList[i] = userGroupList[userGroupList.length - 1];
-                userGroupList.pop();
+    // Modifier to check if a user is a member of a group
+    modifier onlyGroupMember(uint256 _groupId, address _member) {
+        bool isMember = false;
+        for (uint256 i = 0; i < groups[_groupId].members.length; i++) {
+            if (groups[_groupId].members[i] == _member) {
+                isMember = true;
                 break;
             }
         }
+        require(isMember, "Not a member of this group");
+        _;
     }
 
-    // Expense Management Functions
+    // Admin functions
+    function updatePlatformFee(uint256 _newFeeBasisPoints) public onlyOwner {
+        require(_newFeeBasisPoints <= 10000, "Fee cannot exceed 100%");
+        emit PlatformFeeUpdated(platformFeeBasisPoints, _newFeeBasisPoints);
+        platformFeeBasisPoints = _newFeeBasisPoints;
+    }
+
+    function updateFeeRecipient(address _newRecipient) public onlyOwner {
+        require(_newRecipient != address(0), "Invalid recipient address");
+        emit FeeRecipientUpdated(feeRecipient, _newRecipient);
+        feeRecipient = _newRecipient;
+    }
+
+    // Group management
+    function createGroup(string memory _name) public returns (uint256) {
+        uint256 groupId = nextGroupId++;
+        Group storage newGroup = groups[groupId];
+        newGroup.name = _name;
+        newGroup.nextExpenseId = 1;
+        newGroup.members.push(msg.sender);
+        userGroups[msg.sender].push(groupId);
+        emit GroupCreated(groupId, _name, msg.sender);
+        return groupId;
+    }
+
+    function addMember(uint256 _groupId, address _member) public onlyGroupMember(_groupId, msg.sender) {
+        Group storage group = groups[_groupId];
+        for (uint256 i = 0; i < group.members.length; i++) {
+            require(group.members[i] != _member, "Member already in group");
+        }
+        group.members.push(_member);
+        userGroups[_member].push(_groupId);
+        emit MemberAdded(_groupId, _member);
+    }
+
+    function removeMember(uint256 _groupId, address _member) public onlyGroupMember(_groupId, msg.sender) {
+        Group storage group = groups[_groupId];
+        require(group.members.length > 1, "Cannot remove the only member");
+        require(_member != msg.sender, "Cannot remove yourself directly, use leaveGroup"); // Prevent self-removal via this function
+
+        bool found = false;
+        for (uint256 i = 0; i < group.members.length; i++) {
+            if (group.members[i] == _member) {
+                group.members[i] = group.members[group.members.length - 1];
+                group.members.pop();
+                found = true;
+                break;
+            }
+        }
+        require(found, "Member not found in group");
+
+        // Remove group from user's list
+        for (uint256 i = 0; i < userGroups[_member].length; i++) {
+            if (userGroups[_member][i] == _groupId) {
+                userGroups[_member][i] = userGroups[_member][userGroups[_member].length - 1];
+                userGroups[_member].pop();
+                break;
+            }
+        }
+        emit MemberRemoved(_groupId, _member);
+    }
+
+    function leaveGroup(uint256 _groupId) public onlyGroupMember(_groupId, msg.sender) {
+        Group storage group = groups[_groupId];
+        require(group.members.length > 1, "Cannot leave the only member in a group");
+
+        // Remove member from group's list
+        bool found = false;
+        for (uint256 i = 0; i < group.members.length; i++) {
+            if (group.members[i] == msg.sender) {
+                group.members[i] = group.members[group.members.length - 1];
+                group.members.pop();
+                found = true;
+                break;
+            }
+        }
+        require(found, "Caller not found in group");
+
+        // Remove group from user's list
+        for (uint256 i = 0; i < userGroups[msg.sender].length; i++) {
+            if (userGroups[msg.sender][i] == _groupId) {
+                userGroups[msg.sender][i] = userGroups[msg.sender][userGroups[msg.sender].length - 1];
+                userGroups[msg.sender].pop();
+                break;
+            }
+        }
+        emit MemberRemoved(_groupId, msg.sender);
+    }
+
+    // Expense management
     function addExpense(
-        uint256 groupId,
-        string memory description,
-        uint256 totalAmount,
-        address[] memory participants,
-        uint256[] memory shares,
-        address tokenAddress
-    ) external payable groupExists(groupId) onlyGroupMember(groupId) nonReentrant {
-        require(bytes(description).length > 0, "Description cannot be empty");
-        require(totalAmount > 0, "Amount must be greater than 0");
-        require(participants.length > 0, "Must have participants");
-        require(participants.length == shares.length, "Participants and shares length mismatch");
-        
-        // Validate all participants are group members
-        for (uint256 i = 0; i < participants.length; i++) {
-            require(groups[groupId].isMember[participants[i]], "Participant not in group");
+        uint256 _groupId,
+        string memory _description,
+        address _payer,
+        uint256 _totalAmount,
+        address _tokenAddress, // 0x0 for native currency
+        address[] memory _participants,
+        uint256[] memory _shares // shares for each participant
+    ) public onlyGroupMember(_groupId, msg.sender) {
+        require(_payer != address(0), "Invalid payer address");
+        require(_participants.length == _shares.length, "Participants and shares mismatch");
+        require(_totalAmount > 0, "Expense amount must be greater than 0");
+
+        uint256 sumShares = 0;
+        for (uint256 i = 0; i < _shares.length; i++) {
+            require(groups[_groupId].members.length > 0, "Group has no members"); // Ensure group has members
+            bool isParticipantMember = false;
+            for (uint256 j = 0; j < groups[_groupId].members.length; j++) {
+                if (groups[_groupId].members[j] == _participants[i]) {
+                    isParticipantMember = true;
+                    break;
+                }
+            }
+            require(isParticipantMember, "Participant is not a member of the group");
+            sumShares += _shares[i];
         }
-        
-        // Validate shares sum to total amount
-        uint256 sharesSum = 0;
-        for (uint256 i = 0; i < shares.length; i++) {
-            sharesSum += shares[i];
-        }
-        require(sharesSum == totalAmount, "Shares must sum to total amount");
-        
-        expenseCounter++;
-        uint256 expenseId = expenseCounter;
-        
-        Expense storage newExpense = expenses[expenseId];
+        require(sumShares == _totalAmount, "Sum of shares must equal total amount");
+
+        Group storage group = groups[_groupId];
+        uint256 expenseId = group.nextExpenseId++;
+        Expense storage newExpense = group.expenses[expenseId];
+
         newExpense.id = expenseId;
-        newExpense.groupId = groupId;
-        newExpense.description = description;
-        newExpense.totalAmount = totalAmount;
-        newExpense.payer = msg.sender;
-        newExpense.participants = participants;
-        newExpense.tokenAddress = tokenAddress;
-        newExpense.createdAt = block.timestamp;
-        
-        // Set individual shares
-        for (uint256 i = 0; i < participants.length; i++) {
-            newExpense.shares[participants[i]] = shares[i];
-        }
-        
-        // Handle payment
-        if (tokenAddress == address(0)) {
-            // ETH payment
-            require(msg.value == totalAmount, "Incorrect ETH amount");
-        } else {
-            // ERC20 payment
-            require(msg.value == 0, "ETH not accepted for token payments");
-            IERC20(tokenAddress).safeTransferFrom(msg.sender, address(this), totalAmount);
-        }
-        
+        newExpense.description = _description;
+        newExpense.payer = _payer;
+        newExpense.amount = _totalAmount;
+        newExpense.tokenAddress = _tokenAddress;
+        newExpense.participants = _participants;
+        newExpense.settled = false;
+
         // Update balances
-        _updateBalancesForExpense(groupId, expenseId);
-        
-        groups[groupId].expenseCount++;
-        
-        emit ExpenseAdded(groupId, expenseId, msg.sender, totalAmount);
-    }
+        for (uint256 i = 0; i < _participants.length; i++) {
+            address participant = _participants[i];
+            uint256 share = _shares[i];
 
-    function _updateBalancesForExpense(uint256 groupId, uint256 expenseId) internal {
-        Expense storage expense = expenses[expenseId];
-        Balance storage balance = groupBalances[groupId];
-        
-        // Payer gets credited for the full amount
-        balance.balances[expense.payer] += int256(expense.totalAmount);
-        
-        // Each participant gets debited for their share
-        for (uint256 i = 0; i < expense.participants.length; i++) {
-            address participant = expense.participants[i];
-            uint256 share = expense.shares[participant];
-            balance.balances[participant] -= int256(share);
-        }
-    }
+            newExpense.shares[participant] = share;
 
-    // Settlement Functions
-    function settleDebt(uint256 groupId, address creditor, uint256 amount, address tokenAddress) 
-        external payable groupExists(groupId) onlyGroupMember(groupId) nonReentrant {
-        require(creditor != msg.sender, "Cannot settle with yourself");
-        require(groups[groupId].isMember[creditor], "Creditor not in group");
-        require(amount > 0, "Amount must be greater than 0");
-        
-        Balance storage balance = groupBalances[groupId];
-        
-        // Check if debtor actually owes money to creditor
-        int256 debtorBalance = balance.balances[msg.sender];
-        int256 creditorBalance = balance.balances[creditor];
-        
-        require(debtorBalance < 0, "You don't owe money");
-        require(creditorBalance > 0, "Creditor is not owed money");
-        
-        uint256 maxSettlement = uint256(-debtorBalance) < uint256(creditorBalance) 
-            ? uint256(-debtorBalance) 
-            : uint256(creditorBalance);
-        
-        require(amount <= maxSettlement, "Settlement amount too high");
-        
-        // Calculate platform fee
-        uint256 fee = (amount * platformFee) / 10000;
-        uint256 netAmount = amount - fee;
-        
-        // Handle payment
-        if (tokenAddress == address(0)) {
-            // ETH payment
-            require(msg.value == amount, "Incorrect ETH amount");
-            payable(creditor).transfer(netAmount);
-            if (fee > 0) {
-                payable(feeRecipient).transfer(fee);
-            }
-        } else {
-            // ERC20 payment
-            require(msg.value == 0, "ETH not accepted for token payments");
-            IERC20 token = IERC20(tokenAddress);
-            token.safeTransferFrom(msg.sender, creditor, netAmount);
-            if (fee > 0) {
-                token.safeTransferFrom(msg.sender, feeRecipient, fee);
+            if (participant != _payer) {
+                // Participant owes payer
+                group.balances[_payer][participant] += int252(share);
+                group.balances[participant][_payer] -= int252(share);
             }
         }
-        
+
+        emit ExpenseAdded(_groupId, expenseId, _description, _payer, _totalAmount, _tokenAddress);
+    }
+
+    // Debt settlement
+    function settleDebt(
+        uint256 _groupId,
+        address _receiver,
+        uint256 _amount,
+        address _tokenAddress // 0x0 for native currency
+    ) public payable nonReentrant onlyGroupMember(_groupId, msg.sender) {
+        require(_receiver != address(0), "Invalid receiver address");
+        require(_receiver != msg.sender, "Cannot settle debt with yourself");
+        require(_amount > 0, "Amount must be greater than 0");
+
+        Group storage group = groups[_groupId];
+        int256 currentDebt = group.balances[msg.sender][_receiver];
+        require(currentDebt < 0, "No debt owed to this receiver");
+        require(uint256(-currentDebt) >= _amount, "Amount exceeds current debt");
+
+        uint256 feeAmount = (_amount * platformFeeBasisPoints) / 10000;
+        uint256 amountToReceiver = _amount - feeAmount;
+
+        if (_tokenAddress == address(0)) {
+            // Native currency (ETH/BDAG)
+            require(msg.value == _amount, "Incorrect native currency amount sent");
+            (bool successFee, ) = payable(feeRecipient).call{value: feeAmount}("");
+            require(successFee, "Failed to send fee");
+            (bool successReceiver, ) = payable(_receiver).call{value: amountToReceiver}("");
+            require(successReceiver, "Failed to send to receiver");
+        } else {
+            // ERC20 token
+            IERC20 token = IERC20(_tokenAddress);
+            require(token.transferFrom(msg.sender, feeRecipient, feeAmount), "Failed to transfer fee token");
+            require(token.transferFrom(msg.sender, _receiver, amountToReceiver), "Failed to transfer token to receiver");
+        }
+
         // Update balances
-        balance.balances[msg.sender] += int256(amount);
-        balance.balances[creditor] -= int256(amount);
-        
-        emit DebtSettled(groupId, msg.sender, creditor, amount);
+        group.balances[msg.sender][_receiver] += int252(_amount);
+        group.balances[_receiver][msg.sender] -= int252(_amount);
+
+        emit DebtSettled(_groupId, msg.sender, _receiver, _amount, _tokenAddress, feeAmount);
     }
 
-    // View Functions
-    function getGroup(uint256 groupId) external view returns (
-        uint256 id,
-        string memory name,
-        address creator,
-        address[] memory members,
-        uint256 expenseCount,
-        bool isActive,
-        uint256 createdAt
-    ) {
-        Group storage group = groups[groupId];
-        return (
-            group.id,
-            group.name,
-            group.creator,
-            group.members,
-            group.expenseCount,
-            group.isActive,
-            group.createdAt
-        );
+    // View functions
+    function getGroupDetails(uint256 _groupId) public view returns (string memory name, address[] memory members, uint256 nextExpenseId) {
+        Group storage group = groups[_groupId];
+        return (group.name, group.members, group.nextExpenseId);
     }
 
-    function getExpense(uint256 expenseId) external view returns (
+    function getGroupMembers(uint256 _groupId) public view returns (address[] memory) {
+        return groups[_groupId].members;
+    }
+
+    function getExpenseDetails(uint256 _groupId, uint256 _expenseId) public view returns (
         uint256 id,
-        uint256 groupId,
         string memory description,
-        uint256 totalAmount,
         address payer,
-        address[] memory participants,
+        uint256 amount,
         address tokenAddress,
-        uint256 createdAt,
-        bool isSettled
+        address[] memory participants,
+        bool settled
     ) {
-        Expense storage expense = expenses[expenseId];
-        return (
-            expense.id,
-            expense.groupId,
-            expense.description,
-            expense.totalAmount,
-            expense.payer,
-            expense.participants,
-            expense.tokenAddress,
-            expense.createdAt,
-            expense.isSettled
-        );
+        Group storage group = groups[_groupId];
+        Expense storage expense = group.expenses[_expenseId];
+        return (expense.id, expense.description, expense.payer, expense.amount, expense.tokenAddress, expense.participants, expense.settled);
     }
 
-    function getExpenseShare(uint256 expenseId, address participant) external view returns (uint256) {
-        return expenses[expenseId].shares[participant];
+    function getExpenseShare(uint256 _groupId, uint256 _expenseId, address _member) public view returns (uint256) {
+        return groups[_groupId].expenses[_expenseId].shares[_member];
     }
 
-    function getUserBalance(uint256 groupId, address user) external view returns (int256) {
-        return groupBalances[groupId].balances[user];
+    function getUserBalance(uint256 _groupId, address _userA, address _userB) public view returns (int256) {
+        return groups[_groupId].balances[_userA][_userB];
     }
 
-    function getUserGroups(address user) external view returns (uint256[] memory) {
-        return userGroups[user];
-    }
-
-    function getGroupMembers(uint256 groupId) external view returns (address[] memory) {
-        return groups[groupId].members;
-    }
-
-    // Admin Functions
-    function setPlatformFee(uint256 newFee) external onlyOwner {
-        require(newFee <= 1000, "Fee cannot exceed 10%"); // Max 10%
-        platformFee = newFee;
-    }
-
-    function setFeeRecipient(address newRecipient) external onlyOwner {
-        require(newRecipient != address(0), "Invalid recipient");
-        feeRecipient = newRecipient;
-    }
-
-    // Emergency Functions
-    function emergencyWithdraw(address tokenAddress) external onlyOwner {
-        if (tokenAddress == address(0)) {
-            payable(owner()).transfer(address(this).balance);
-        } else {
-            IERC20 token = IERC20(tokenAddress);
-            token.safeTransfer(owner(), token.balanceOf(address(this)));
-        }
+    function getUserGroups(address _user) public view returns (uint256[] memory) {
+        return userGroups[_user];
     }
 }
