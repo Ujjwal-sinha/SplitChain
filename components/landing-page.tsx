@@ -252,7 +252,7 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
             </div>
             <div>
               <span className="text-2xl font-bold neon-text font-mono">SplitChain</span>
-              <div className="text-xs text-green-400/70 font-mono">v2.0.1-beta</div>
+              
             </div>
           </div>
           <div className="text-green-300 font-mono text-lg animate-fade-in-out">{infoMessages[currentInfoIndex]}</div>

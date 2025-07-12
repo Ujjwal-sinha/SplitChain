@@ -86,8 +86,7 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
   return (
     <div className="flex min-h-screen matrix-bg">
       <Sidebar onPageChange={onPageChange} currentPage="dashboard" />
-      {/* Removed <div className="digital-grid-overlay" /> */}
-      <main className="flex-1 p-6 ml-64">
+      <main className="flex-1 p-6 ml-64 animate-in fade-in-0 zoom-in-95 duration-500">
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
@@ -309,7 +308,7 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
                 {recentActivity.map((activity) => (
                   <div
                     key={activity.id}
-                    className="flex items-center justify-between p-4 rounded-lg glass-green border border-green-500/20 hover:border-green-500/40 transition-colors"
+                    className="flex items-center justify-between p-4 rounded-lg glass-green border border-green-500/20 hover:bg-green-500/10 hover:border-green-500/40 transition-colors"
                   >
                     <div className="flex items-center space-x-4">
                       <div
