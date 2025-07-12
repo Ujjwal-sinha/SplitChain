@@ -58,7 +58,7 @@ contract SplitChainCore is ReentrancyGuard, Ownable {
     
     mapping(uint256 => Group) public groups;
     mapping(uint256 => Expense) public expenses;
-    mapping(uint256 => Balance) public groupBalances;
+    mapping(uint256 => Balance) internal groupBalances; // Changed from public to internal
     mapping(address => uint256[]) public userGroups;
     
     // Platform fee (in basis points, 100 = 1%)
