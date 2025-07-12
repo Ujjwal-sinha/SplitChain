@@ -1,0 +1,13 @@
+{
+  "transactions": [
+    {
+      "rpc": "https://rpc.primordial.bdagscan.com"
+    },
+    {
+      "rpc": "https://rpc.primordial.bdagscan.com"
+    },
+    {
+      "rpc": "https://rpc.primordial.bdagscan.com"
+    }
+  ]
+}
