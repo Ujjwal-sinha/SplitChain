@@ -1,0 +1,21 @@
+[profile.default]
+src = "contracts"
+out = "artifacts"
+libs = ["node_modules"]
+test = "test"
+cache_path = "cache_foundry"
+
+# BlockDAG Primordial Testnet configuration
+[rpc_endpoints]
+blockdag = "https://rpc.primordial.bdagscan.com"
+
+[etherscan]
+blockdag = { key = "YOUR_BLOCKDAG_EXPLORER_API_KEY_HERE" } # Replace with your actual BlockDAG Explorer API Key
+
+# Set default network for forge commands
+[chain_ids]
+blockdag_primordial = 1043
+
+# Private key for deployment (ensure this is loaded from environment variables)
+# You will typically pass this via --private-key or environment variable when running forge script
+# e.g., PRIVATE_KEY=0x... forge script scripts/DeploySplitChain.s.sol --rpc-url blockdag_primordial --broadcast
