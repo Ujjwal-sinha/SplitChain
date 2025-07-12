@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useWallet } from "@/components/wallet-provider"
-import { X, Wallet, ExternalLink, Copy, LogOut, Settings, Shield, Zap } from "lucide-react"
+import { X, Wallet, ExternalLink, Copy, LogOut, Settings, Shield, Zap, ChevronLeft } from "lucide-react"
 
 interface WalletSelectionModalProps {
   onClose: () => void
@@ -204,7 +204,7 @@ export function WalletSelectionModal({ onClose, onWalletConnected, isConnected =
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="absolute right-2 top-2 text-slate-400 hover:text-white"
+              className="absolute right-4 top-4 text-slate-400 hover:text-white"
             >
               <X className="w-4 h-4" />
             </Button>
@@ -331,9 +331,17 @@ export function WalletSelectionModal({ onClose, onWalletConnected, isConnected =
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="absolute right-2 top-2 text-slate-400 hover:text-white z-10"
+              className="absolute right-4 top-4 text-slate-400 hover:text-white z-10"
             >
               <X className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="absolute left-4 top-4 text-slate-400 hover:text-white z-10"
+            >
+              <ChevronLeft className="w-4 h-4" />
             </Button>
             <CardTitle className="neon-white-text flex items-center text-xl font-mono">
               {" "}

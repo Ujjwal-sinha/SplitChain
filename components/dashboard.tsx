@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Sidebar } from "@/components/sidebar"
 import { WalletCard } from "@/components/wallet-card"
 import { BalanceFlow } from "@/components/balance-flow"
-import { Plus, Activity, ArrowUpRight, ArrowDownLeft, Zap, Users, DollarSign } from "lucide-react"
+import { Plus, Activity, ArrowUpRight, ArrowDownLeft, Zap, Users, DollarSign, ChevronLeft } from "lucide-react"
 
 interface DashboardProps {
   onPageChange: (page: "landing" | "dashboard" | "group" | "analytics" | "settings") => void
@@ -90,10 +90,20 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
       <main className="flex-1 p-6 ml-64">
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header */}
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold neon-text font-mono mb-2">Dashboard</h1>
-              <p className="text-green-400/70 font-mono">Manage your decentralized expense groups</p>
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onPageChange("landing")}
+                className="text-slate-400 hover:text-white mr-2"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </Button>
+              <div>
+                <h1 className="text-3xl font-bold neon-text font-mono mb-2">Dashboard</h1>
+                <p className="text-green-400/70 font-mono">Manage your decentralized expense groups</p>
+              </div>
             </div>
             <Button onClick={onCreateGroup} className="btn-matrix font-mono">
               <Plus className="w-4 h-4 mr-2" />
