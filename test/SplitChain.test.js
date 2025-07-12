@@ -1,64 +1,56 @@
-const { expect } = require("chai")
-const { ethers } = require("hardhat")
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
 
 describe("SplitChain Contracts", function () {
-  let owner, addr1, addr2
-  let token, core, factory, multiToken, analytics
+  let token, factory, core, multiToken, analytics, governance;
+  let owner, user1, user2;
 
   before(async function () {
-    [owner, addr1, addr2] = await ethers.getSigners()
+    [owner, user1, user2] = await ethers.getSigners();
 
-    // Deploy SplitChainToken
-    const SplitChainToken = await ethers.getContractFactory("SplitChainToken")
-    token = await SplitChainToken.deploy()
-    await token.deployed()
+    // Deploy Token
+    const SplitChainToken = await ethers.getContractFactory("SplitChainToken");
+    token = await SplitChainToken.deploy();
 
-    // Deploy SplitChainCore
-    const SplitChainCore = await ethers.getContractFactory("SplitChainCore")
-    core = await SplitChainCore.deploy()
-    await core.deployed()
+    // Deploy Factory
+    const SplitChainFactory = await ethers.getContractFactory("SplitChainFactory");
+    factory = await SplitChainFactory.deploy();
 
-    // Deploy SplitChainFactory
-    const SplitChainFactory = await ethers.getContractFactory("SplitChainFactory")
-    factory = await SplitChainFactory.deploy()
-    await factory.deployed()
+    // Deploy Core through Factory
+    await factory.deployCore(100);
+    const coreAddress = (await factory.deployedContracts())[0];
+    core = await ethers.getContractAt("SplitChainCore", coreAddress);
 
-    // Deploy SplitChainMultiToken
-    const SplitChainMultiToken = await ethers.getContractFactory("SplitChainMultiToken")
-    multiToken = await SplitChainMultiToken.deploy()
-    await multiToken.deployed()
+    // Deploy other contracts
+    const SplitChainMultiToken = await ethers.getContractFactory("SplitChainMultiToken");
+    multiToken = await SplitChainMultiToken.deploy();
 
-    // Deploy SplitChainAnalytics with Core address
-    const SplitChainAnalytics = await ethers.getContractFactory("SplitChainAnalytics")
-    analytics = await SplitChainAnalytics.deploy(core.address)
-    await analytics.deployed()
-  })
+    const SplitChainAnalytics = await ethers.getContractFactory("SplitChainAnalytics");
+    analytics = await SplitChainAnalytics.deploy(core.address);
 
-  describe("Deployment Checks", function () {
-    it("Should deploy all contracts with valid addresses", async function () {
-      expect(token.address).to.properAddress
-      expect(core.address).to.properAddress
-      expect(factory.address).to.properAddress
-      expect(multiToken.address).to.properAddress
-      expect(analytics.address).to.properAddress
-    })
-  })
+    const SplitChainGovernance = await ethers.getContractFactory("SplitChainGovernance");
+    governance = await SplitChainGovernance.deploy(token.address);
+  });
 
-  describe("SplitChainToken", function () {
-    it("Should have correct initial values", async function () {
-      const name = await token.name()
-      const symbol = await token.symbol()
-      expect(name).to.be.a("string")
-      expect(symbol).to.be.a("string")
-    })
-  })
+  describe("Token Contract", function () {
+    it("Should have correct initial supply", async function () {
+      expect(await token.totalSupply()).to.equal(ethers.parseEther("1000000000"));
+    });
+  });
 
-  describe("SplitChainAnalytics", function () {
-    it("Should be linked to the correct Core contract", async function () {
-      const coreAddressInAnalytics = await analytics.core()
-      expect(coreAddressInAnalytics).to.equal(core.address)
-    })
-  })
+  describe("Factory Contract", function () {
+    it("Should deploy new Core contracts", async function () {
+      await expect(factory.connect(user1).deployCore(100))
+        .to.emit(factory, "NewCoreDeployed");
+    });
+  });
 
-  // Add more tests as per the actual logic of your contracts
-})
+  describe("MultiToken Contract", function () {
+    it("Should allow owner to add supported tokens", async function () {
+      await multiToken.connect(owner).addToken(user1.address, ethers.parseEther("1.5"));
+      expect(await multiToken.supportedTokens(user1.address)).to.be.true;
+    });
+  });
+
+  // More tests for each contract...
+});
