@@ -1,16 +1,17 @@
 "use client"
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Sidebar } from "@/components/sidebar"
 import { WalletCard } from "@/components/wallet-card"
 import { BalanceFlow } from "@/components/balance-flow"
-import { GroupManagement } from "@/components/group-management"
-import { Analytics } from "@/components/analytics"
-import { NetworkStatus } from "@/components/network-status"
-import { Plus, Activity, ArrowUpRight, ArrowDownLeft, Zap, Users, DollarSign, ChevronLeft } from "lucide-react"
+import { CreateGroupModal } from "@/components/create-group-modal"
+import { useContracts } from "@/hooks/use-contracts"
+import { useWallet } from "@/components/wallet-provider"
+import { Plus, TrendingUp, Users, DollarSign, ArrowUpRight, ArrowDownLeft, Settings, Loader2, ChevronLeft, Zap, Activity } from "lucide-react"
 
 interface DashboardProps {
   onPageChange: (page: "landing" | "dashboard" | "group" | "analytics" | "settings") => void
@@ -18,73 +19,28 @@ interface DashboardProps {
   onCreateGroup: () => void
 }
 
-const mockGroups = [
-  {
-    id: "1",
-    name: "Crypto Meetup",
-    members: 8,
-    balance: -125.5,
-    color: "from-green-500 to-green-400",
-    status: "active",
-  },
-  {
-    id: "2",
-    name: "DeFi Research",
-    members: 12,
-    balance: 89.25,
-    color: "from-slate-500 to-slate-400", // Changed to slate
-    status: "active",
-  },
-  {
-    id: "3",
-    name: "Web3 Hackathon",
-    members: 6,
-    balance: -67.75,
-    color: "from-green-600 to-green-500",
-    status: "settling",
-  },
-  {
-    id: "4",
-    name: "DAO Expenses",
-    members: 15,
-    balance: 234.0,
-    color: "from-slate-300 to-slate-200", // Changed to slate
-    status: "active",
-  },
-]
-
-const recentActivity = [
-  {
-    id: "1",
-    type: "expense",
-    description: "Gas fees for smart contract deployment",
-    amount: 45.5,
-    group: "DeFi Research",
-    time: "2 hours ago",
-    hash: "0x1234...5678",
-  },
-  {
-    id: "2",
-    type: "settlement",
-    description: "Settled with alice.eth",
-    amount: 125.0,
-    group: "Crypto Meetup",
-    time: "5 hours ago",
-    hash: "0x2345...6789",
-  },
-  {
-    id: "3",
-    type: "expense",
-    description: "Conference tickets",
-    amount: 89.25,
-    group: "Web3 Hackathon",
-    time: "1 day ago",
-    hash: "0x3456...7890",
-  },
-]
-
 export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: DashboardProps) {
-  const [selectedGroupFilter, setSelectedGroupFilter] = useState<string>("all")
+  const [showCreateGroup, setShowCreateGroup] = useState(false)
+  const { groups, loading, fetchGroups } = useContracts()
+  const { isConnected, isCorrectNetwork } = useWallet()
+
+  useEffect(() => {
+    if (isConnected && isCorrectNetwork) {
+      fetchGroups()
+    }
+  }, [isConnected, isCorrectNetwork, fetchGroups])
+
+  const handleCreateGroup = () => {
+    setShowCreateGroup(true)
+    if (onCreateGroup) {
+      onCreateGroup()
+    }
+  }
+
+  const handleGroupCreated = () => {
+    setShowCreateGroup(false)
+    fetchGroups() // Refresh groups after creation
+  }
 
   return (
     <div className="flex min-h-screen matrix-bg">
@@ -107,51 +63,44 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
                 <p className="text-green-400/70 font-mono">Manage your decentralized expense groups</p>
               </div>
             </div>
-            <Button onClick={onCreateGroup} className="btn-matrix font-mono">
+            <Button onClick={handleCreateGroup} className="btn-matrix font-mono">
               <Plus className="w-4 h-4 mr-2" />
               Create Group
             </Button>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid lg:grid-cols-4 gap-6">
+          {/* Quick Stats */}
+          <div className="grid md:grid-cols-4 gap-4 mb-8">
             <Card className="glass-green neon-border card-hover">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-green-400/70 text-sm font-mono">Total Balance</p>
-                    <p className="text-2xl font-bold neon-text font-mono">$1,247.50</p>
+                    <p className="text-green-400/70 text-sm font-mono">Active Groups</p>
+                    <p className="text-2xl font-bold neon-text font-mono">
+                      {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : groups.length}
+                    </p>
                   </div>
                   <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-400 rounded-lg flex items-center justify-center">
-                    <DollarSign className="w-6 h-6 text-black" />
+                    <Users className="w-6 h-6 text-black" />
                   </div>
-                </div>
-                <div className="flex items-center mt-2 text-green-400 text-sm font-mono">
-                  <ArrowUpRight className="w-4 h-4 mr-1" />
-                  +12.5% from last month
                 </div>
               </CardContent>
             </Card>
 
             <Card className="glass-white neon-white-border card-hover">
-              {" "}
-              {/* Changed to glass-white */}
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-slate-400/70 text-sm font-mono">Active Groups</p> {/* Changed text color */}
-                    <p className="text-2xl font-bold neon-white-text font-mono">4</p> {/* Changed text color */}
+                    <p className="text-slate-400/70 text-sm font-mono">Total Balance</p>
+                    <p className="text-2xl font-bold neon-white-text font-mono">
+                      {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 
+                        `$${groups.reduce((sum, group) => sum + Math.abs(parseFloat(group.yourBalance) || 0), 0).toFixed(2)}`
+                      }
+                    </p>
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-slate-400 to-slate-300 rounded-lg flex items-center justify-center">
-                    {" "}
-                    {/* Changed gradient */}
-                    <Users className="w-6 h-6 text-black" />
+                  <div className="w-12 h-12 bg-gradient-to-r from-slate-500 to-green-500 rounded-lg flex items-center justify-center">
+                    <DollarSign className="w-6 h-6 text-black" />
                   </div>
-                </div>
-                <div className="flex items-center mt-2 text-slate-400 text-sm font-mono">
-                  {" "}
-                  {/* Changed text color */}
-                  <ArrowUpRight className="w-4 h-4 mr-1" />2 new this week
                 </div>
               </CardContent>
             </Card>
@@ -175,23 +124,17 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
             </Card>
 
             <Card className="glass-white neon-white-border card-hover">
-              {" "}
-              {/* Changed to glass-white */}
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-slate-400/70 text-sm font-mono">Settlements</p> {/* Changed text color */}
-                    <p className="text-2xl font-bold neon-white-text font-mono">23</p> {/* Changed text color */}
+                    <p className="text-slate-400/70 text-sm font-mono">Settlements</p>
+                    <p className="text-2xl font-bold neon-white-text font-mono">23</p>
                   </div>
                   <div className="w-12 h-12 bg-gradient-to-r from-slate-300 to-slate-200 rounded-lg flex items-center justify-center">
-                    {" "}
-                    {/* Changed gradient */}
                     <Activity className="w-6 h-6 text-black" />
                   </div>
                 </div>
                 <div className="flex items-center mt-2 text-slate-400 text-sm font-mono">
-                  {" "}
-                  {/* Changed text color */}
                   <ArrowUpRight className="w-4 h-4 mr-1" />
                   This month
                 </div>
@@ -220,83 +163,104 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
           </div>
 
           {/* Groups Grid */}
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold neon-text font-mono">Your Groups</h2>
-              <div className="flex space-x-2">
-                <Button
-                  variant={selectedGroupFilter === "all" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedGroupFilter("all")}
-                  className={
-                    selectedGroupFilter === "all"
-                      ? "bg-green-500 text-black font-mono"
-                      : "border-green-500/50 text-green-400 hover:bg-green-500/10 font-mono bg-transparent"
-                  }
-                >
-                  All
-                </Button>
-                <Button
-                  variant={selectedGroupFilter === "active" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedGroupFilter("active")}
-                  className={
-                    selectedGroupFilter === "active"
-                      ? "bg-slate-500 text-black font-mono" // Changed to slate
-                      : "border-slate-500/50 text-slate-400 hover:bg-slate-500/10 font-mono bg-transparent" // Changed to slate
-                  }
-                >
-                  Active
-                </Button>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {mockGroups.map((group) => (
-                <Card
-                  key={group.id}
-                  className="glass-green neon-border card-hover cursor-pointer"
-                  onClick={() => onGroupSelect(group.id)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${group.color}`} />
-                      <Badge
-                        variant="secondary"
-                        className={`font-mono text-xs ${
-                          group.status === "active"
-                            ? "bg-green-500/20 text-green-300 border-green-500/30"
-                            : group.status === "settling"
-                              ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
-                              : "bg-gray-500/20 text-gray-300 border-gray-500/30"
-                        }`}
-                      >
-                        {group.members} members
-                      </Badge>
-                    </div>
-                    <h3 className="font-semibold neon-text mb-2 font-mono group-hover:text-green-300 transition-colors">
-                      {group.name}
-                    </h3>
+          <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            {loading ? (
+              // Loading skeleton
+              Array.from({ length: 3 }).map((_, i) => (
+                <Card key={i} className="glass-green neon-border">
+                  <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-green-400/70 font-mono">Your balance</span>
-                      <div className="flex items-center">
-                        {group.balance > 0 ? (
-                          <ArrowUpRight className="w-4 h-4 text-green-400 mr-1" />
-                        ) : (
-                          <ArrowDownLeft className="w-4 h-4 text-red-400 mr-1" />
-                        )}
-                        <span
-                          className={`font-semibold font-mono ${group.balance > 0 ? "text-green-400" : "text-red-400"}`}
-                        >
-                          ${Math.abs(group.balance).toFixed(2)}
-                        </span>
-                      </div>
+                      <div className="h-6 w-32 bg-green-500/20 rounded animate-pulse" />
+                      <div className="h-5 w-16 bg-green-500/20 rounded animate-pulse" />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="h-4 w-24 bg-green-500/20 rounded animate-pulse" />
+                      <div className="h-4 w-16 bg-green-500/20 rounded animate-pulse" />
+                    </div>
+                    <div className="flex -space-x-2">
+                      {[1, 2, 3].map((j) => (
+                        <div key={j} className="w-8 h-8 rounded-full bg-green-500/20 animate-pulse" />
+                      ))}
                     </div>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
+              ))
+            ) : groups.length === 0 ? (
+              <div className="col-span-full text-center py-12">
+                <Users className="w-16 h-16 text-green-400/50 mx-auto mb-4" />
+                <p className="text-green-400/70 font-mono mb-4">No groups found</p>
+                <Button onClick={handleCreateGroup} className="btn-matrix font-mono">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Your First Group
+                </Button>
+              </div>
+            ) : (
+              groups.map((group) => {
+                const balance = parseFloat(group.yourBalance) || 0
+                return (
+                  <Card
+                    key={group.id}
+                    onClick={() => onGroupSelect(group.id.toString())}
+                    className="glass-green neon-border card-hover cursor-pointer group"
+                  >
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="neon-text font-mono">{group.name}</CardTitle>
+                        <Badge className="bg-green-500/20 text-green-300 border-green-500/30 font-mono text-xs">
+                          active
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Users className="w-4 h-4 text-green-400/70" />
+                          <span className="text-sm text-green-400/70 font-mono">{group.members.length} members</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          {balance > 0 ? (
+                            <ArrowUpRight className="w-4 h-4 text-green-400" />
+                          ) : (
+                            <ArrowDownLeft className="w-4 h-4 text-red-400" />
+                          )}
+                          <span
+                            className={`font-semibold font-mono ${
+                              balance > 0 ? "text-green-400" : "text-red-400"
+                            }`}
+                          >
+                            ${Math.abs(balance).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex -space-x-2">
+                        {group.members.slice(0, 3).map((member, i) => (
+                          <Avatar key={i} className="w-8 h-8 border-2 border-black bg-gradient-to-r from-slate-500 to-green-500">
+                            <AvatarFallback className="text-black text-xs font-semibold">
+                              {member.slice(2, 4).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                        ))}
+                        {group.members.length > 3 && (
+                          <div className="w-8 h-8 rounded-full border-2 border-black bg-gradient-to-r from-green-700 to-green-600 flex items-center justify-center">
+                            <span className="text-black text-xs font-semibold">+{group.members.length - 3}</span>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )
+              })
+            )}
           </div>
+          {showCreateGroup && (
+          <CreateGroupModal
+            onClose={() => setShowCreateGroup(false)}
+            onGroupCreated={handleGroupCreated}
+          />
+        )}
 
           {/* Recent Activity */}
           <Card className="glass-green neon-border">
@@ -308,7 +272,7 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {recentActivity.map((activity) => (
+                {/* {recentActivity.map((activity) => (
                   <div
                     key={activity.id}
                     className="flex items-center justify-between p-4 rounded-lg glass-green border border-green-500/20 hover:bg-green-500/10 hover:border-green-500/40 transition-colors"
@@ -334,7 +298,7 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
                       {activity.type === "expense" ? "-" : "+"}${activity.amount.toFixed(2)}
                     </span>
                   </div>
-                ))}
+                ))} */}
               </div>
             </CardContent>
           </Card>

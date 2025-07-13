@@ -8,17 +8,39 @@ import { Wallet, Copy, ExternalLink, Zap } from "lucide-react"
 
 // Update to use the real wallet data from context
 import { useWallet } from "@/components/wallet-provider"
+import { useContracts } from "@/hooks/use-contracts"
+import { useState, useEffect } from "react"
 
 export function WalletCard() {
   const { address, ensName, balance, chainId } = useWallet()
+  const { isConnected } = useWallet()
+  const [splitTokenBalance, setSplitTokenBalance] = useState("0.0000")
 
   // Update to use the real wallet data from context
   const walletAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "Not connected"
   const displayName = ensName || walletAddress
-  const ethBalance = balance || "0.00"
+
+  const { getSplitTokenBalance } = useContracts()
+
+  // Fetch split token balance
+  useEffect(() => {
+    const fetchSplitTokenBalance = async () => {
+      if (isConnected && address) {
+        try {
+          const balance = await getSplitTokenBalance(address)
+          setSplitTokenBalance(balance)
+        } catch (error) {
+          console.error('Error fetching split token balance:', error)
+          setSplitTokenBalance("0.0000")
+        }
+      }
+    }
+    
+    fetchSplitTokenBalance()
+  }, [isConnected, address, getSplitTokenBalance])
 
   const tokens = [
-    { symbol: "ETH", balance: ethBalance, value: "$4,890" },
+    { symbol: "SPLIT", balance: splitTokenBalance, value: "$0.00" },
     { symbol: "WETH", balance: "1.23", value: "$2,460" },
     { symbol: "USDC", balance: "1,250", value: "$1,250" },
   ]
@@ -76,21 +98,19 @@ export function WalletCard() {
           <h4 className="text-sm font-medium text-slate-300 font-mono">Token Balances</h4> {/* Changed to slate */}
           {tokens.map((token) => (
             <div key={token.symbol} className="flex items-center justify-between p-2 rounded-lg glass-white">
-              {" "}
-              {/* Changed to glass-white */}
               <div className="flex items-center space-x-2">
-                <div className="w-6 h-6 bg-gradient-to-r from-slate-500 to-green-500 rounded-full flex items-center justify-center">
-                  {" "}
-                  {/* Mixed gradient */}
-                  <Zap className="w-3 h-3 text-black" /> {/* Icon color */}
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                  token.symbol === 'SPLIT' 
+                    ? 'bg-gradient-to-r from-green-500 to-green-400' 
+                    : 'bg-gradient-to-r from-slate-500 to-green-500'
+                }`}>
+                  <Zap className="w-3 h-3 text-black" />
                 </div>
-                <span className="neon-white-text font-medium font-mono">{token.symbol}</span>{" "}
-                {/* Changed to neon-white-text */}
+                <span className="neon-white-text font-medium font-mono">{token.symbol}</span>
               </div>
               <div className="text-right">
-                <p className="neon-white-text font-semibold font-mono">{token.balance}</p>{" "}
-                {/* Changed to neon-white-text */}
-                <p className="text-xs text-slate-400/70 font-mono">{token.value}</p> {/* Changed to slate */}
+                <p className="neon-white-text font-semibold font-mono">{token.balance}</p>
+                <p className="text-xs text-slate-400/70 font-mono">{token.value}</p>
               </div>
             </div>
           ))}

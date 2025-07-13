@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { CardTitle } from "@/components/ui/card"
@@ -12,43 +12,17 @@ import { Card } from "@/components/ui/card"
 import { CardContent } from "@/components/ui/card"
 import { Avatar } from "@/components/ui/avatar"
 import { AvatarFallback } from "@/components/ui/avatar"
-import { Users } from "lucide-react"
-import { ArrowUpRight } from "lucide-react"
-import { ArrowDownLeft } from "lucide-react"
-import { Receipt } from "lucide-react"
-import { DollarSign } from "lucide-react"
-import { Plus } from "lucide-react"
-import { Check } from "lucide-react"
+import { useContracts } from "@/hooks/use-contracts"
+import { useWallet } from "@/components/wallet-provider"
+import { Users, ArrowUpRight, ArrowDownLeft, Receipt, DollarSign, Plus, Check, History, Loader2 } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { History } from "lucide-react" // Import History icon
 
 interface GroupViewProps {
   groupId: string
-  onPageChange: (page: "landing" | "dashboard" | "group" | "analytics") => void
+  onPageChange: (page: "landing" | "dashboard" | "group" | "analytics" | "settings") => void
 }
 
-const mockGroupData = {
-  id: "1",
-  name: "Weekend Trip",
-  members: [
-    { id: "1", name: "You", address: "0x1234...5678", balance: -45.5, avatar: "Y" },
-    { id: "2", name: "Alice", address: "0x2345...6789", balance: 23.75, avatar: "A" },
-    { id: "3", name: "Bob", address: "0x3456...7890", balance: 15.25, avatar: "B" },
-    { id: "4", name: "Carol", address: "0x4567...8901", balance: 6.5, avatar: "C" },
-  ],
-  expenses: [
-    {
-      id: "1",
-      description: "Dinner at Sushi Place",
-      amount: 89.5,
-      paidBy: "Alice",
-      date: "2024-01-15",
-      settled: false,
-    },
-    { id: "2", description: "Hotel Room", amount: 240.0, paidBy: "You", date: "2024-01-14", settled: true },
-    { id: "3", description: "Uber rides", amount: 45.75, paidBy: "Bob", date: "2024-01-14", settled: false },
-  ],
-}
+// Real contract data will be loaded via useContracts hook
 
 export function GroupView({ groupId, onPageChange }: GroupViewProps) {
   const [newExpense, setNewExpense] = useState({
@@ -56,12 +30,52 @@ export function GroupView({ groupId, onPageChange }: GroupViewProps) {
     amount: "",
     splitType: "equal",
   })
+  const { groups, expenses, addExpense, fetchGroups, fetchExpenses, loading } = useContracts()
+  const { address } = useWallet()
 
-  const handleAddExpense = () => {
-    // Handle expense addition logic
-    console.log("Adding expense:", newExpense)
-    setNewExpense({ description: "", amount: "", splitType: "equal" })
+  const groupData = groups.find(g => g.id.toString() === groupId)
+
+  useEffect(() => {
+    if (groupId) {
+      fetchGroups()
+      fetchExpenses()
+    }
+  }, [groupId, fetchGroups, fetchExpenses])
+
+  const handleAddExpense = async () => {
+    if (newExpense.description && newExpense.amount && groupData) {
+      try {
+        await addExpense(
+          parseInt(groupId),
+          newExpense.description,
+          newExpense.amount,
+          "0x0000000000000000000000000000000000000000" // ETH address
+        )
+        setNewExpense({ description: "", amount: "", splitType: "equal" })
+        fetchExpenses() // Refresh expenses
+      } catch (error) {
+        console.error("Error adding expense:", error)
+      }
+    }
   }
+
+  if (!groupData) {
+    return (
+      <div className="flex min-h-screen matrix-bg">
+        <Sidebar onPageChange={onPageChange} currentPage="group" />
+        <main className="flex-1 p-6 ml-64">
+          <div className="max-w-7xl mx-auto flex items-center justify-center h-64">
+            <div className="text-center">
+              <Loader2 className="w-8 h-8 animate-spin text-green-400 mx-auto mb-4" />
+              <p className="text-green-400/70 font-mono">Loading group data...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  const groupExpenses = expenses.filter(e => e.groupId.toString() === groupId)
 
   return (
     <div className="flex min-h-screen matrix-bg">
@@ -74,17 +88,13 @@ export function GroupView({ groupId, onPageChange }: GroupViewProps) {
           {/* Header */}
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold neon-text font-mono mb-2">{mockGroupData.name}</h1> {/* Themed text */}
+              <h1 className="text-3xl font-bold neon-text font-mono mb-2">{groupData.name}</h1>
               <div className="flex items-center space-x-4 text-green-400/70 font-mono">
-                {" "}
-                {/* Themed text */}
                 <div className="flex items-center">
                   <Users className="w-4 h-4 mr-1" />
-                  {mockGroupData.members.length} members
+                  {groupData.members.length} members
                 </div>
                 <Badge variant="secondary" className="bg-slate-500/20 text-slate-300 border-slate-500/30 font-mono">
-                  {" "}
-                  {/* Changed to slate */}
                   Active
                 </Badge>
               </div>
@@ -100,42 +110,50 @@ export function GroupView({ groupId, onPageChange }: GroupViewProps) {
 
           {/* Balance Overview */}
           <div className="grid md:grid-cols-4 gap-4">
-            {mockGroupData.members.map((member) => (
-              <Card key={member.id} className="glass-green neon-border card-hover">
-                {" "}
-                {/* Themed card */}
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <Avatar className="w-10 h-10 bg-gradient-to-r from-slate-500 to-green-500">
-                      {" "}
-                      {/* Mixed gradient */}
-                      <AvatarFallback className="text-black font-semibold">{member.avatar}</AvatarFallback>{" "}
-                      {/* Icon color */}
-                    </Avatar>
-                    <div>
-                      <p className="font-semibold neon-text font-mono">{member.name}</p> {/* Themed text */}
-                      <p className="text-xs text-green-400/70 font-mono">{member.address}</p> {/* Themed text */}
+            {groupData.members.map((memberAddress, index) => {
+              const balance = parseFloat(groupData.yourBalance) || 0
+              const isCurrentUser = memberAddress === address
+              return (
+                <Card key={memberAddress} className="glass-green neon-border card-hover">
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <Avatar className="w-10 h-10 bg-gradient-to-r from-slate-500 to-green-500">
+                        <AvatarFallback className="text-black font-semibold">
+                          {memberAddress.slice(2, 4).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-semibold neon-text font-mono">
+                          {isCurrentUser ? "You" : `${memberAddress.slice(0, 6)}...${memberAddress.slice(-4)}`}
+                        </p>
+                        <p className="text-xs text-green-400/70 font-mono">{memberAddress}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-green-400/70 font-mono">Balance</span> {/* Themed text */}
-                    <div className="flex items-center">
-                      {member.balance > 0 ? (
-                        <ArrowUpRight className="w-4 h-4 mr-1" />
-                      ) : (
-                        <ArrowDownLeft className="w-4 h-4 mr-1" />
-                      )}
-                      <span
-                        className={`font-semibold font-mono ${member.balance > 0 ? "text-green-400" : "text-red-400"}`}
-                      >
-                        {" "}
-                        {/* Themed text */}${Math.abs(member.balance).toFixed(2)}
-                      </span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-green-400/70 font-mono">Balance</span>
+                      <div className="flex items-center">
+                        {isCurrentUser ? (
+                          <>
+                            {balance > 0 ? (
+                              <ArrowUpRight className="w-4 h-4 mr-1" />
+                            ) : (
+                              <ArrowDownLeft className="w-4 h-4 mr-1" />
+                            )}
+                            <span
+                              className={`font-semibold font-mono ${balance > 0 ? "text-green-400" : "text-red-400"}`}
+                            >
+                              ${Math.abs(balance).toFixed(2)}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-slate-400/70 font-mono text-sm">-</span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              )
+            })}
           </div>
 
           {/* Main Content Tabs */}
@@ -264,41 +282,44 @@ export function GroupView({ groupId, onPageChange }: GroupViewProps) {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {mockGroupData.members
-                      .filter((m) => m.balance !== 0)
-                      .map((member) => (
+                    {groupData.members
+                      .filter((memberAddress) => {
+                        // For now, show all members since we don't have individual balances
+                        return true
+                      })
+                      .map((memberAddress, index) => (
                         <div
-                          key={member.id}
+                          key={memberAddress}
                           className="flex items-center justify-between p-4 rounded-lg glass-green border border-green-500/20" /* Themed card */
                         >
                           <div className="flex items-center space-x-3">
                             <Avatar className="w-10 h-10 bg-gradient-to-r from-slate-500 to-green-500">
                               {" "}
                               {/* Mixed gradient */}
-                              <AvatarFallback className="text-black font-semibold">{member.avatar}</AvatarFallback>{" "}
+                              <AvatarFallback className="text-black font-semibold">
+                                {memberAddress.slice(2, 4).toUpperCase()}
+                              </AvatarFallback>{" "}
                               {/* Icon color */}
                             </Avatar>
                             <div>
-                              <p className="font-semibold neon-text font-mono">{member.name}</p> {/* Themed text */}
+                              <p className="font-semibold neon-text font-mono">
+                                {memberAddress === address ? "You" : `${memberAddress.slice(0, 6)}...${memberAddress.slice(-4)}`}
+                              </p> {/* Themed text */}
                               <p className="text-sm text-green-400/70 font-mono">
-                                {member.balance > 0 ? "Gets back" : "Owes"}
+                                Calculating balance...
                               </p>{" "}
                               {/* Themed text */}
                             </div>
                           </div>
                           <div className="flex items-center space-x-3">
-                            <span
-                              className={`font-bold text-lg font-mono ${member.balance > 0 ? "text-green-400" : "text-red-400"}`} /* Themed text */
-                            >
-                              ${Math.abs(member.balance).toFixed(2)}
+                            <span className="font-bold text-lg font-mono text-green-400">
+                              $0.00
                             </span>
-                            {member.balance < 0 && (
-                              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-black font-mono">
-                                {" "}
-                                {/* Themed button */}
-                                Settle
-                              </Button>
-                            )}
+                            <Button size="sm" className="bg-green-600 hover:bg-green-700 text-black font-mono">
+                              {" "}
+                              {/* Themed button */}
+                              Settle
+                            </Button>
                           </div>
                         </div>
                       ))}
@@ -309,45 +330,45 @@ export function GroupView({ groupId, onPageChange }: GroupViewProps) {
 
             <TabsContent value="history">
               <Card className="glass-green neon-border">
-                {" "}
-                {/* Themed card */}
                 <CardHeader>
-                  <CardTitle className="neon-text font-mono">Expense History</CardTitle> {/* Themed text */}
+                  <CardTitle className="neon-text font-mono">Expense History</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {mockGroupData.expenses.map((expense) => (
-                      <div
-                        key={expense.id}
-                        className="flex items-center justify-between p-4 rounded-lg glass-green border border-green-500/20" /* Themed card */
-                      >
-                        <div className={`w-3 h-3 rounded-full ${expense.settled ? "bg-green-400" : "bg-yellow-400"}`} />
-                        <div>
-                          <p className="font-semibold neon-text font-mono">{expense.description}</p> {/* Themed text */}
-                          <p className="text-sm text-green-400/70 font-mono">
-                            {" "}
-                            {/* Themed text */}
-                            Paid by {expense.paidBy} • {expense.date}
-                          </p>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <span className="font-semibold neon-text font-mono">${expense.amount.toFixed(2)}</span>{" "}
-                          {/* Themed text */}
-                          {expense.settled ? (
-                            <Badge className="bg-green-500/20 text-green-300 border-green-500/30 font-mono">
-                              {" "}
-                              {/* Themed badge */}
-                              <Check className="w-3 h-3 mr-1" />
-                              Settled
-                            </Badge>
-                          ) : (
+                    {loading ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loader2 className="w-6 h-6 animate-spin text-green-400" />
+                      </div>
+                    ) : groupExpenses.length === 0 ? (
+                      <div className="text-center py-8">
+                        <Receipt className="w-12 h-12 text-green-400/50 mx-auto mb-4" />
+                        <p className="text-green-400/70 font-mono">No expenses yet</p>
+                      </div>
+                    ) : (
+                      groupExpenses.map((expense) => (
+                        <div
+                          key={expense.id}
+                          className="flex items-center justify-between p-4 rounded-lg glass-green border border-green-500/20"
+                        >
+                          <div className="w-3 h-3 rounded-full bg-yellow-400" />
+                          <div className="flex-1 ml-4">
+                            <p className="font-semibold neon-text font-mono">{expense.description}</p>
+                            <p className="text-sm text-green-400/70 font-mono">
+                              Paid by {expense.payer === address ? "You" : `${expense.payer.slice(0, 6)}...${expense.payer.slice(-4)}`} • 
+                              {new Date(expense.timestamp * 1000).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div className="flex items-center space-x-3">
+                            <span className="font-semibold neon-text font-mono">
+                              ${parseFloat(expense.amount).toFixed(2)}
+                            </span>
                             <Badge className="bg-yellow-500/20 text-yellow-300 border-yellow-500/30 font-mono">
                               Pending
-                            </Badge> /* Themed badge */
-                          )}
+                            </Badge>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </CardContent>
               </Card>

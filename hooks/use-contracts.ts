@@ -1,11 +1,10 @@
-
-
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, ReactNode,} from 'react'
 import { ethers } from 'ethers'
 import { useWallet } from '@/components/wallet-provider'
 import { getContract, getSigner, BLOCKDAG_NETWORK } from '@/lib/contracts'
 
 export interface Group {
+  [x: string]: ReactNode
   id: number
   name: string
   creator: string
@@ -40,15 +39,12 @@ export function useContracts() {
     setLoading(true)
     try {
       const signer = await getSigner()
-      const coreContract = getContract('core', signer)
-      
-      const tx = await coreContract.createGroup(name, members)
+      const contract = getContract('core', signer)
+
+      const tx = await contract.createGroup(name, members)
       await tx.wait()
-      
-      // Refresh groups after creation
-      await loadGroups()
-      
-      return tx.hash
+
+      console.log('Group created successfully')
     } catch (error) {
       console.error('Error creating group:', error)
       throw error
@@ -57,73 +53,24 @@ export function useContracts() {
     }
   }, [isConnected, address, isCorrectNetwork])
 
-  const addExpense = useCallback(async (
-    groupId: number,
-    amount: string,
-    token: string,
-    description: string
-  ) => {
+  const addExpense = useCallback(async (groupId: number, description: string, amount: string, token: string) => {
     if (!isConnected || !address) throw new Error('Wallet not connected')
     if (!isCorrectNetwork) throw new Error('Please switch to BlockDAG network')
 
     setLoading(true)
     try {
       const signer = await getSigner()
-      const coreContract = getContract('core', signer)
-      
+      const contract = getContract('core', signer)
+
       const amountWei = ethers.parseEther(amount)
-      const isNativeToken = token === ethers.ZeroAddress
-      
-      const tx = await coreContract.addExpense(
-        groupId,
-        amountWei,
-        token,
-        description,
-        { value: isNativeToken ? amountWei : 0 }
-      )
+      const tx = await contract.addExpense(groupId, description, amountWei, token, {
+        value: token === '0x0000000000000000000000000000000000000000' ? amountWei : 0
+      })
       await tx.wait()
-      
-      // Refresh expenses after adding
-      await loadExpenses()
-      
-      return tx.hash
+
+      console.log('Expense added successfully')
     } catch (error) {
       console.error('Error adding expense:', error)
-      throw error
-    } finally {
-      setLoading(false)
-    }
-  }, [isConnected, address, isCorrectNetwork])
-
-  const settleDebt = useCallback(async (
-    groupId: number,
-    token: string,
-    to: string,
-    amount: string
-  ) => {
-    if (!isConnected || !address) throw new Error('Wallet not connected')
-    if (!isCorrectNetwork) throw new Error('Please switch to BlockDAG network')
-
-    setLoading(true)
-    try {
-      const signer = await getSigner()
-      const coreContract = getContract('core', signer)
-      
-      const amountWei = ethers.parseEther(amount)
-      const isNativeToken = token === ethers.ZeroAddress
-      
-      const tx = await coreContract.settleDebt(
-        groupId,
-        token,
-        to,
-        amountWei,
-        { value: isNativeToken ? amountWei : 0 }
-      )
-      await tx.wait()
-      
-      return tx.hash
-    } catch (error) {
-      console.error('Error settling debt:', error)
       throw error
     } finally {
       setLoading(false)
@@ -176,6 +123,77 @@ export function useContracts() {
     }
   }, [isConnected, isCorrectNetwork, loadGroups, loadExpenses])
 
+  const fetchGroups = useCallback(async () => {
+    setLoading(true);
+    try {
+      // Implement logic to fetch groups from the contract and update the state
+      // Example:
+      // const contract = await getContract('core');
+      // const groupsData = await contract.getGroups(); // Replace with your contract method
+      // setGroups(groupsData);
+    } catch (error) {
+      console.error('Error fetching groups:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchExpenses = useCallback(async () => {
+    setLoading(true);
+    try {
+      // Implement logic to fetch expenses from the contract and update the state
+      // Example:
+      // const signer = await getSigner();
+      // const contract = getContract('core', signer);
+      // const expensesData = await contract.getExpenses(); // Replace with your contract method
+      // setExpenses(expensesData);
+    } catch (error) {
+      console.error('Error fetching expenses:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const settleDebt = useCallback(async (groupId: number, token: string, to: string, amount: string) => {
+    if (!isConnected || !address) throw new Error('Wallet not connected')
+    if (!isCorrectNetwork) throw new Error('Please switch to BlockDAG network')
+
+    setLoading(true)
+    try {
+      const signer = await getSigner()
+      const contract = getContract('core', signer)
+
+      const amountWei = ethers.parseEther(amount)
+      const tx = await contract.settleDebt(groupId, token, to, amountWei, {
+        value: token === '0x0000000000000000000000000000000000000000' ? amountWei : 0
+      })
+      await tx.wait()
+
+      console.log('Debt settled successfully')
+    } catch (error) {
+      console.error('Error settling debt:', error)
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }, [isConnected, address, isCorrectNetwork])
+
+  const getSplitTokenBalance = useCallback(async (userAddress: string) => {
+    if (!isConnected || !userAddress) return '0.0000'
+    if (!isCorrectNetwork) return '0.0000'
+
+    try {
+      const signer = await getSigner()
+      const contract = getContract('token', signer)
+      
+      const balance = await contract.balanceOf(userAddress)
+      return ethers.formatEther(balance)
+    } catch (error) {
+      console.error('Error fetching split token balance:', error)
+      return '0.0000'
+    }
+  }, [isConnected, isCorrectNetwork])
+
   return {
     loading,
     groups,
@@ -184,8 +202,11 @@ export function useContracts() {
     createGroup,
     addExpense,
     settleDebt,
+    getSplitTokenBalance,
     switchToBlockDAG,
     loadGroups,
-    loadExpenses
+    loadExpenses,
+    fetchGroups,
+    fetchExpenses
   }
 }

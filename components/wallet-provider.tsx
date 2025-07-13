@@ -8,6 +8,7 @@ interface WalletContextType {
   chainId: number | null
   balance: string | null
   ensName: string | null
+  isCorrectNetwork: boolean
   connectWallet: (walletType: string) => Promise<void>
   disconnectWallet: () => void
   switchNetwork: (chainId: number) => Promise<void>
@@ -27,12 +28,28 @@ interface WalletProviderProps {
   children: ReactNode
 }
 
+// BlockDAG Network configuration
+const BLOCKDAG_NETWORK = {
+  chainId: 60808,
+  name: "BlockDAG Testnet",
+  nativeCurrency: {
+    name: "BlockDAG",
+    symbol: "BDAG",
+    decimals: 18,
+  },
+  rpcUrl: "https://rpc.primordial.bdagscan.com",
+  blockExplorerUrl: "https://bdagscan.com",
+}
+
 export function WalletProvider({ children }: WalletProviderProps) {
   const [isConnected, setIsConnected] = useState(false)
   const [address, setAddress] = useState<string | null>(null)
   const [chainId, setChainId] = useState<number | null>(null)
   const [balance, setBalance] = useState<string | null>(null)
   const [ensName, setEnsName] = useState<string | null>(null)
+
+  // Check if connected to BlockDAG network
+  const isCorrectNetwork = chainId === BLOCKDAG_NETWORK.chainId
 
   // Check if wallet is already connected on page load
   useEffect(() => {
@@ -253,14 +270,10 @@ export function WalletProvider({ children }: WalletProviderProps) {
             params: [
               {
                 chainId: `0x${targetChainId.toString(16)}`,
-                chainName: "BlockDAG Testnet",
-                nativeCurrency: {
-                  name: "BlockDAG",
-                  symbol: "BDAG",
-                  decimals: 18,
-                },
-                rpcUrls: ["https://rpc.primordial.bdagscan.com"],
-                blockExplorerUrls: ["https://bdagscan.com"],
+                chainName: BLOCKDAG_NETWORK.name,
+                nativeCurrency: BLOCKDAG_NETWORK.nativeCurrency,
+                rpcUrls: [BLOCKDAG_NETWORK.rpcUrl],
+                blockExplorerUrls: [BLOCKDAG_NETWORK.blockExplorerUrl],
               },
             ],
           })
@@ -276,6 +289,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
     chainId,
     balance,
     ensName,
+    isCorrectNetwork,
     connectWallet,
     disconnectWallet,
     switchNetwork,

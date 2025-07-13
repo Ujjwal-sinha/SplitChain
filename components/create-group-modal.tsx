@@ -14,10 +14,11 @@ import { useWallet } from "@/components/wallet-provider"
 interface CreateGroupModalProps {
   trigger?: React.ReactNode
   onGroupCreated?: (group: any) => void
+  onClose?: () => void
 }
 
-export function CreateGroupModal({ trigger, onGroupCreated }: CreateGroupModalProps) {
-  const [open, setOpen] = useState(false)
+export function CreateGroupModal({ trigger, onGroupCreated, onClose }: CreateGroupModalProps) {
+  const [open, setOpen] = useState(onClose ? true : false)
   const [groupName, setGroupName] = useState("")
   const [newMemberAddress, setNewMemberAddress] = useState("")
   const [members, setMembers] = useState<string[]>([])
@@ -87,13 +88,19 @@ export function CreateGroupModal({ trigger, onGroupCreated }: CreateGroupModalPr
       setGroupName("")
       setMembers([])
       setError("")
+      onClose?.()
     } catch (err: any) {
       setError(err.message || "Failed to create group")
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(newOpen) => {
+      setOpen(newOpen)
+      if (!newOpen && onClose) {
+        onClose()
+      }
+    }}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="glass-white neon-white-border animate-in fade-in-0 zoom-in-95 duration-300">
         <DialogHeader>
@@ -168,7 +175,10 @@ export function CreateGroupModal({ trigger, onGroupCreated }: CreateGroupModalPr
         <DialogFooter>
           <Button 
             variant="outline" 
-            onClick={() => setOpen(false)} 
+            onClick={() => {
+              setOpen(false)
+              onClose?.()
+            }} 
             className="border-slate-500/50 text-slate-300 hover:bg-slate-500/10 font-mono"
             disabled={loading}
           >

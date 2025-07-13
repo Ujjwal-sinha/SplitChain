@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -8,42 +8,15 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Sidebar } from "@/components/sidebar"
-import { Plus, Users, SettingsIcon, Trash2, UserPlus, Copy, ExternalLink, Shield, Zap, Code } from "lucide-react"
+import { useContracts } from "@/hooks/use-contracts"
+import { useWallet } from "@/components/wallet-provider"
+import { Plus, Users, SettingsIcon, Trash2, UserPlus, Copy, ExternalLink, Shield, Zap, Code, Loader2 } from "lucide-react"
 
 interface GroupManagementProps {
   onPageChange: (page: "landing" | "dashboard" | "group" | "analytics" | "settings") => void
 }
 
-const mockGroups = [
-  {
-    id: "1",
-    name: "Crypto Meetup",
-    description: "Monthly crypto meetup expenses",
-    members: [
-      { id: "1", name: "You", address: "0x1234...5678", role: "admin", avatar: "Y" },
-      { id: "2", name: "alice.eth", address: "0x2345...6789", role: "member", avatar: "A" },
-      { id: "3", name: "bob.eth", address: "0x3456...7890", role: "member", avatar: "B" },
-      { id: "4", name: "charlie.eth", address: "0x4567...8901", role: "member", avatar: "C" },
-    ],
-    contractAddress: "0xabcd...ef12",
-    totalExpenses: 1247.5,
-    status: "active",
-    createdAt: "2024-01-15",
-  },
-  {
-    id: "2",
-    name: "DeFi Research",
-    description: "Research group for DeFi protocols",
-    members: [
-      { id: "1", name: "You", address: "0x1234...5678", role: "admin", avatar: "Y" },
-      { id: "5", name: "defi.eth", address: "0x5678...9012", role: "member", avatar: "D" },
-    ],
-    contractAddress: "0x1234...5678",
-    totalExpenses: 892.25,
-    status: "active",
-    createdAt: "2024-01-20",
-  },
-]
+// Real contract data will be loaded via useContracts hook
 
 export function GroupManagement({ onPageChange }: GroupManagementProps) {
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null)
@@ -51,8 +24,16 @@ export function GroupManagement({ onPageChange }: GroupManagementProps) {
   const [showCreateGroup, setShowCreateGroup] = useState(false)
   const [newGroupName, setNewGroupName] = useState("")
   const [newGroupDescription, setNewGroupDescription] = useState("")
+  const { groups, loading, fetchGroups, createGroup } = useContracts()
+  const { isConnected, address } = useWallet()
 
-  const selectedGroupData = mockGroups.find((g) => g.id === selectedGroup)
+  useEffect(() => {
+    if (isConnected) {
+      fetchGroups()
+    }
+  }, [isConnected, fetchGroups])
+
+  const selectedGroupData = groups.find((g) => g.id.toString() === selectedGroup)
 
   const handleAddMember = () => {
     if (newMemberAddress.trim()) {
@@ -61,12 +42,17 @@ export function GroupManagement({ onPageChange }: GroupManagementProps) {
     }
   }
 
-  const handleCreateGroup = () => {
-    if (newGroupName.trim()) {
-      console.log("Creating group:", { name: newGroupName, description: newGroupDescription })
-      setNewGroupName("")
-      setNewGroupDescription("")
-      setShowCreateGroup(false)
+  const handleCreateGroup = async () => {
+    if (newGroupName.trim() && address) {
+      try {
+        await createGroup(newGroupName, [address]) // Start with creator as only member
+        setNewGroupName("")
+        setNewGroupDescription("")
+        setShowCreateGroup(false)
+        fetchGroups() // Refresh groups list
+      } catch (error) {
+        console.error("Error creating group:", error)
+      }
     }
   }
 
@@ -149,29 +135,38 @@ export function GroupManagement({ onPageChange }: GroupManagementProps) {
                   <CardTitle className="neon-text font-mono">Your Groups</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {mockGroups.map((group) => (
-                    <div
-                      key={group.id}
-                      onClick={() => setSelectedGroup(group.id)}
-                      className={`p-4 rounded-lg cursor-pointer transition-all border ${
-                        selectedGroup === group.id
-                          ? "glass-green-strong border-green-500/50 neon-glow"
-                          : "glass-green border-green-500/20 hover:border-green-500/40"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold neon-text font-mono">{group.name}</h3>
-                        <Badge className="bg-green-500/20 text-green-300 border-green-500/30 font-mono text-xs">
-                          {group.members.length} members
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-green-400/70 mb-2">{group.description}</p>
-                      <div className="flex items-center justify-between text-xs text-green-400/50 font-mono">
-                        <span>${group.totalExpenses.toFixed(2)} total</span>
-                        <span>{group.status}</span>
-                      </div>
+                  {loading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="w-6 h-6 animate-spin text-green-400" />
                     </div>
-                  ))}
+                  ) : groups.length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-green-400/70 font-mono">No groups found</p>
+                    </div>
+                  ) : (
+                    groups.map((group) => (
+                      <div
+                        key={group.id}
+                        onClick={() => setSelectedGroup(group.id.toString())}
+                        className={`p-4 rounded-lg cursor-pointer transition-all border ${
+                          selectedGroup === group.id.toString()
+                            ? "glass-green-strong border-green-500/50 neon-glow"
+                            : "glass-green border-green-500/20 hover:border-green-500/40"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-semibold neon-text font-mono">{group.name}</h3>
+                          <Badge className="bg-green-500/20 text-green-300 border-green-500/30 font-mono text-xs">
+                            {group.members.length} members
+                          </Badge>
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-green-400/50 font-mono">
+                          <span>${parseFloat(group.totalExpenses || "0").toFixed(2)} total</span>
+                          <span>active</span>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -203,38 +198,24 @@ export function GroupManagement({ onPageChange }: GroupManagementProps) {
                       {/* Changed to slate */}
                       <div className="grid grid-cols-2 gap-4">
                         <div className="p-3 rounded-lg glass-white border border-slate-500/20">
-                          {" "}
-                          {/* Changed to glass-white */}
-                          <div className="text-sm text-slate-400/70 font-mono">Contract Address</div>{" "}
-                          {/* Changed to slate */}
+                          <div className="text-sm text-slate-400/70 font-mono">Group ID</div>
                           <div className="flex items-center space-x-2">
-                            <span className="font-mono text-slate-400">{selectedGroupData.contractAddress}</span>{" "}
-                            {/* Changed to slate */}
+                            <span className="font-mono text-slate-400">#{selectedGroupData.id}</span>
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-6 w-6 p-0 text-slate-400/70 hover:text-slate-400" /* Changed to slate */
+                              onClick={() => navigator.clipboard.writeText(selectedGroupData.id.toString())}
+                              className="h-6 w-6 p-0 text-slate-400/70 hover:text-slate-400"
                             >
                               <Copy className="w-3 h-3" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-6 w-6 p-0 text-slate-400/70 hover:text-slate-400" /* Changed to slate */
-                            >
-                              <ExternalLink className="w-3 h-3" />
                             </Button>
                           </div>
                         </div>
 
                         <div className="p-3 rounded-lg glass-white border border-slate-500/20">
-                          {" "}
-                          {/* Changed to glass-white */}
-                          <div className="text-sm text-slate-400/70 font-mono">Total Expenses</div>{" "}
-                          {/* Changed to slate */}
+                          <div className="text-sm text-slate-400/70 font-mono">Total Expenses</div>
                           <div className="text-xl font-bold neon-white-text font-mono">
-                            {" "}
-                            {/* Changed to neon-white-text */}${selectedGroupData.totalExpenses.toFixed(2)}
+                            ${parseFloat(selectedGroupData.totalExpenses || "0").toFixed(2)}
                           </div>
                         </div>
                       </div>
@@ -278,36 +259,35 @@ export function GroupManagement({ onPageChange }: GroupManagementProps) {
 
                       {/* Members List */}
                       <div className="space-y-3">
-                        {selectedGroupData.members.map((member) => (
+                        {selectedGroupData.members.map((memberAddress, index) => (
                           <div
-                            key={member.id}
-                            className="flex items-center justify-between p-3 rounded-lg glass-white border border-slate-500/20" /* Changed to glass-white */
+                            key={memberAddress}
+                            className="flex items-center justify-between p-3 rounded-lg glass-white border border-slate-500/20"
                           >
                             <div className="flex items-center space-x-3">
                               <Avatar className="w-10 h-10 bg-gradient-to-r from-slate-500 to-green-500">
-                                {" "}
-                                {/* Mixed gradient */}
-                                <AvatarFallback className="text-black font-semibold">{member.avatar}</AvatarFallback>{" "}
-                                {/* Icon color */}
+                                <AvatarFallback className="text-black font-semibold">
+                                  {memberAddress.slice(2, 4).toUpperCase()}
+                                </AvatarFallback>
                               </Avatar>
                               <div>
-                                <p className="font-semibold neon-white-text font-mono">{member.name}</p>{" "}
-                                {/* Changed to neon-white-text */}
-                                <p className="text-sm text-slate-400/70 font-mono">{member.address}</p>{" "}
-                                {/* Changed to slate */}
+                                <p className="font-semibold neon-white-text font-mono">
+                                  {memberAddress === address ? "You" : `${memberAddress.slice(0, 6)}...${memberAddress.slice(-4)}`}
+                                </p>
+                                <p className="text-sm text-slate-400/70 font-mono">{memberAddress}</p>
                               </div>
                             </div>
                             <div className="flex items-center space-x-2">
                               <Badge
                                 className={`font-mono text-xs ${
-                                  member.role === "admin"
+                                  memberAddress === selectedGroupData.creator
                                     ? "bg-green-500/30 text-green-200 border-green-500/50"
-                                    : "bg-slate-500/20 text-slate-300 border-slate-500/30" // Changed to slate
+                                    : "bg-slate-500/20 text-slate-300 border-slate-500/30"
                                 }`}
                               >
-                                {member.role}
+                                {memberAddress === selectedGroupData.creator ? "creator" : "member"}
                               </Badge>
-                              {member.role !== "admin" && (
+                              {memberAddress !== selectedGroupData.creator && memberAddress === address && (
                                 <Button
                                   variant="ghost"
                                   size="sm"
