@@ -7,7 +7,7 @@ import { Analytics } from "@/components/analytics"
 import { GroupManagement } from "@/components/group-management"
 import { Settings } from "@/components/settings"
 import { CreateGroupModal } from "@/components/create-group-modal"
-import { WalletProvider } from "@/components/wallet-provider"
+import { WalletProvider } from "@/components/wallet-provider" // Only import WalletProvider
 import { Footer } from "@/components/footer"
 
 export default function SplitChainApp() {
@@ -25,11 +25,9 @@ export default function SplitChainApp() {
 
   const handlePageChange = (page: "landing" | "dashboard" | "group" | "analytics" | "settings") => {
     if (page === "dashboard") {
-      // When navigating to dashboard via the button, simulate wallet connection
       setIsWalletConnected(true)
       setCurrentPage("dashboard")
     } else if (page === "group") {
-      // If navigating to group page, show group management instead
       setCurrentPage("group")
     } else {
       setCurrentPage(page)
@@ -38,12 +36,12 @@ export default function SplitChainApp() {
 
   const handleGroupSelect = (groupId: string) => {
     setSelectedGroup(groupId)
-    // For now, we'll stay on the group management page
-    // In a full implementation, you might have a separate group detail view
   }
 
   return (
     <WalletProvider>
+      {" "}
+      {/* WalletProvider wraps the entire content */}
       <div className="min-h-screen matrix-bg">
         {currentPage === "landing" && (
           <LandingPage onWalletConnect={handleWalletConnect} onPageChange={handlePageChange} />

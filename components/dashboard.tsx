@@ -7,6 +7,9 @@ import { Badge } from "@/components/ui/badge"
 import { Sidebar } from "@/components/sidebar"
 import { WalletCard } from "@/components/wallet-card"
 import { BalanceFlow } from "@/components/balance-flow"
+import { GroupManagement } from "@/components/group-management"
+import { Analytics } from "@/components/analytics"
+import { NetworkStatus } from "@/components/network-status"
 import { Plus, Activity, ArrowUpRight, ArrowDownLeft, Zap, Users, DollarSign, ChevronLeft } from "lucide-react"
 
 interface DashboardProps {

@@ -1,16 +1,15 @@
-interface Window {
-  ethereum?: {
-    isMetaMask?: boolean
-    isCoinbaseWallet?: boolean
-    isTrust?: boolean
-    isTrustWallet?: boolean
-    isRabby?: boolean
-    isExodus?: boolean
-    isBraveWallet?: boolean
-    selectedProvider?: any
-    providers?: any[]
-    request: (args: { method: string; params?: any[] }) => Promise<any>
-    on: (event: string, callback: (data: any) => void) => void
-    removeListener: (event: string, callback: (data: any) => void) => void
+import type { MetaMaskInpageProvider } from "@metamask/providers"
+
+declare global {
+  interface Window {
+    ethereum?: MetaMaskInpageProvider & {
+      providers?: MetaMaskInpageProvider[]
+      isMetaMask?: boolean
+      isCoinbaseWallet?: boolean
+      isTrust?: boolean
+      isTrustWallet?: boolean
+      isRabby?: boolean
+      isBraveWallet?: boolean
+    }
   }
 }

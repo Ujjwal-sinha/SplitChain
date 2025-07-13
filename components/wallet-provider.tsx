@@ -247,7 +247,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
       } catch (error: any) {
         // If the chain hasn't been added to MetaMask, add it
         if (error.code === 4902) {
-          // Add BlockDAG Testnet (example configuration)
+          // Add BlockDAG Testnet
           await window.ethereum.request({
             method: "wallet_addEthereumChain",
             params: [
@@ -259,8 +259,8 @@ export function WalletProvider({ children }: WalletProviderProps) {
                   symbol: "BDAG",
                   decimals: 18,
                 },
-                rpcUrls: ["https://rpc.blockdag.network"], // Replace with actual RPC
-                blockExplorerUrls: ["https://explorer.blockdag.network"], // Replace with actual explorer
+                rpcUrls: ["https://rpc.primordial.bdagscan.com"],
+                blockExplorerUrls: ["https://bdagscan.com"],
               },
             ],
           })

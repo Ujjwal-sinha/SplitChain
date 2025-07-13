@@ -3,23 +3,12 @@
 import { useRef, useState, useEffect } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
 import { OrbitControls, Sphere, MeshDistortMaterial, Box } from "@react-three/drei"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { ConnectWalletButton } from "@/components/connect-wallet-button"
-import {
-  Users,
-  Receipt,
-  TrendingUp,
-  Shield,
-  Zap,
-  Globe,
-  Code,
-  Lock,
-  Cpu,
-  Network,
-  DollarSign,
-  LayoutDashboard,
-} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { ArrowRight, Shield, Zap, Users, PieChart, Coins, Globe, Github, Twitter, BookOpen, ExternalLink, Code, Cpu, DollarSign, LayoutDashboard, Network, Receipt, TrendingUp } from "lucide-react"
+import { CONTRACT_ADDRESSES } from "@/lib/contracts"
 import type * as THREE from "three"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { MessageSquare, Lightbulb, CheckCircle } from "lucide-react"
@@ -252,7 +241,7 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
             </div>
             <div>
               <span className="text-2xl font-bold neon-text font-mono">SplitChain</span>
-              
+
             </div>
           </div>
           <div className="text-green-300 font-mono text-lg animate-fade-in-out">{infoMessages[currentInfoIndex]}</div>
@@ -329,7 +318,7 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
                     <div
                       className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-lg flex items-center justify-center mx-auto mb-6 ${hoveredFeature === index ? "neon-glow" : ""} transition-all duration-300`}
                     >
-                      <feature.icon className="w-8 h-8 text-black" />
+                    
                     </div>
                     <h3 className="text-xl font-semibold neon-text mb-3 font-mono">{feature.title}</h3>
                     <p className="text-green-400/80">{feature.description}</p>
@@ -431,18 +420,51 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
               </Accordion>
             </div>
 
-            {/* CTA Section */}
-            <div className="glass-green neon-border rounded-2xl p-12 text-center">
-              <h2 className="text-3xl font-bold neon-text mb-4 font-mono">Ready to Split the Future?</h2>
-              <p className="text-green-400/80 mb-8 text-lg">
-                Join thousands of users already using SplitChain for trustless expense management
-              </p>
-              <ConnectWalletButton
-                onConnect={onWalletConnect}
-                size="lg"
-                className="btn-matrix px-12 py-4 text-xl font-mono"
-              />
+            {/* Contract Addresses */}
+          <div className="py-16">
+            <div className="text-center mb-12">
+              <h2 className="text-2xl font-bold neon-text mb-4 font-mono">Deployed Contracts</h2>
+              <p className="text-green-400/80 font-mono">Live on BlockDAG Testnet</p>
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              {Object.entries(CONTRACT_ADDRESSES).map(([name, address]) => (
+                <Card key={name} className="glass-green border-green-500/30">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-green-300 font-mono capitalize text-sm">
+                      {name === 'multiToken' ? 'Multi Token' : name}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between">
+                      <code className="text-xs text-green-400/80 break-all">
+                        {address.slice(0, 10)}...{address.slice(-8)}
+                      </code>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-green-400 hover:text-green-300 p-1"
+                        onClick={() => window.open(`https://bdagscan.com/address/${address}`, '_blank')}
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          {/* Call to Action */}
+          <div className="text-center py-16">
+            <h2 className="text-2xl font-bold neon-text mb-4 font-mono">Ready to Split Smart?</h2>
+            <p className="text-green-400/80 mb-8 font-mono">Join the future of expense sharing on the blockchain</p>
+            <ConnectWalletButton size="lg" className="mr-4" />
+            <Button variant="outline" size="lg" className="border-green-500/50 text-green-400 hover:bg-green-500/10 font-mono">
+              <BookOpen className="w-4 h-4 mr-2" />
+              Documentation
+            </Button>
+          </div>
           </div>
         </main>
 
