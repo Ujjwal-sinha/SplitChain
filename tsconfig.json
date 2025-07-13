@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "scripts/deploy.js"  ],
   "exclude": ["node_modules"]
 }
