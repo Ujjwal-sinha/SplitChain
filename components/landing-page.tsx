@@ -123,7 +123,7 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
       color: "from-slate-500 to-slate-400", // Changed to slate
     },
     {
-      icon: Lock,
+      icon: Receipt,
       title: "Zero Trust",
       description: "Blockchain-secured settlements with cryptographic proof",
       color: "from-green-600 to-green-500",

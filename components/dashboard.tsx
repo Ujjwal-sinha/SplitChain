@@ -53,7 +53,8 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
         "0x853e46Dd9D9F5F5eE5e5F9F5f4C4F5c4D4D9D5F5"  // Test address 2
       ]
 
-      await createGroup("Test Group " + Date.now(), testMembers)
+      const result = await createGroup("Test Group " + Date.now(), testMembers)
+      console.log("Test group created with ID:", result)
       console.log("Test group created successfully!")
     } catch (error) {
       console.error("Error creating test group:", error)
@@ -67,6 +68,22 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       alert(`❌ Contract Test Failed: ${errorMessage}`)
+    }
+  }
+
+  const testDatabase = async () => {
+    try {
+      const response = await fetch('/api/test-db')
+      const result = await response.json()
+      
+      if (result.success) {
+        alert(`✅ MongoDB Connected!\nCollections: ${result.collections.join(', ') || 'None yet'}`)
+      } else {
+        alert(`❌ MongoDB Test Failed: ${result.message}`)
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      alert(`❌ Database Test Failed: ${errorMessage}`)
     }
   }
 
@@ -237,6 +254,13 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
                     className="w-full border-blue-500/50 text-blue-400 hover:bg-blue-500/10 font-mono bg-transparent"
                   >
                     Test Contract Connection
+                  </Button>
+                  <Button 
+                    onClick={testDatabase} 
+                    variant="outline"
+                    className="w-full border-purple-500/50 text-purple-400 hover:bg-purple-500/10 font-mono bg-transparent"
+                  >
+                    Test MongoDB Connection
                   </Button>
                 </div>
               </div>

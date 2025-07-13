@@ -2,9 +2,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { ethers } from 'ethers'
 import { useWallet } from '@/components/wallet-provider'
 import { getContract, getSigner, BLOCKDAG_NETWORK } from '@/lib/contracts'
+// Remove direct database imports - we'll use API routes
 
 export interface Group {
-  id: number
+  id: string
   name: string
   creator: string
   members: string[]
@@ -14,7 +15,7 @@ export interface Group {
 
 export interface Expense {
   id: string
-  groupId: number
+  groupId: string
   payer: string
   amount: string
   token: string
@@ -40,10 +41,38 @@ export function useContracts() {
       const signer = await getSigner()
       const contract = getContract('core', signer)
 
+      // Create group on blockchain
       const tx = await contract.createGroup(name, members)
       await tx.wait()
 
+      // Store group in database via API
+      const response = await fetch('/api/groups', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          creator: address,
+          members,
+          txHash: tx.hash
+        })
+      })
+      
+      const group = await response.json()
+      
+      // Update local state
+      setGroups(prev => [...prev, {
+        id: group.id,
+        name: group.name,
+        creator: group.creator,
+        members: group.members,
+        totalExpenses: '0',
+        yourBalance: '0'
+      }])
+
       console.log('Group created successfully')
+      return tx.hash
     } catch (error) {
       console.error('Error creating group:', error)
       throw error
@@ -52,7 +81,7 @@ export function useContracts() {
     }
   }, [isConnected, address, isCorrectNetwork])
 
-  const addExpense = useCallback(async (groupId: number, description: string, amount: string, token: string) => {
+  const addExpense = useCallback(async (groupId: string, description: string, amount: string, token: string) => {
     if (!isConnected || !address) throw new Error('Wallet not connected')
     if (!isCorrectNetwork) throw new Error('Please switch to BlockDAG network')
 
@@ -66,6 +95,22 @@ export function useContracts() {
         value: token === '0x0000000000000000000000000000000000000000' ? amountWei : 0
       })
       await tx.wait()
+
+      // Store expense in database via API
+      await fetch('/api/expenses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          groupId,
+          payer: address,
+          amount,
+          token,
+          description,
+          txHash: tx.hash
+        })
+      })
 
       console.log('Expense added successfully')
     } catch (error) {
@@ -123,29 +168,47 @@ export function useContracts() {
   }, [isConnected, isCorrectNetwork, loadGroups, loadExpenses])
 
   const fetchGroups = useCallback(async () => {
+    if (!isConnected || !address) return
+    
     setLoading(true);
     try {
-      // Implement logic to fetch groups from the contract and update the state
-      // Example:
-      // const contract = await getContract('core');
-      // const groupsData = await contract.getGroups(); // Replace with your contract method
-      // setGroups(groupsData);
+      const response = await fetch(`/api/groups?userAddress=${address}`)
+      const dbGroups = await response.json()
+      
+      const formattedGroups = dbGroups.map((group: any) => ({
+        id: group.id,
+        name: group.name,
+        creator: group.creator,
+        members: group.members,
+        totalExpenses: '0', // TODO: Calculate from expenses
+        yourBalance: '0' // TODO: Calculate from balances
+      }))
+      setGroups(formattedGroups)
     } catch (error) {
       console.error('Error fetching groups:', error);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isConnected, address]);
 
-  const fetchExpenses = useCallback(async () => {
+  const fetchExpenses = useCallback(async (groupId?: string) => {
     setLoading(true);
     try {
-      // Implement logic to fetch expenses from the contract and update the state
-      // Example:
-      // const signer = await getSigner();
-      // const contract = getContract('core', signer);
-      // const expensesData = await contract.getExpenses(); // Replace with your contract method
-      // setExpenses(expensesData);
+      if (groupId) {
+        const response = await fetch(`/api/expenses?groupId=${groupId}`)
+        const dbExpenses = await response.json()
+        
+        const formattedExpenses = dbExpenses.map((expense: any) => ({
+          id: expense.id.toString(),
+          groupId: expense.group_id.toString(),
+          payer: expense.payer,
+          amount: expense.amount,
+          token: expense.token,
+          description: expense.description,
+          timestamp: Math.floor(new Date(expense.timestamp).getTime() / 1000)
+        }))
+        setExpenses(formattedExpenses)
+      }
     } catch (error) {
       console.error('Error fetching expenses:', error);
     } finally {
@@ -153,7 +216,7 @@ export function useContracts() {
     }
   }, []);
 
-  const settleDebt = useCallback(async (groupId: number, token: string, to: string, amount: string) => {
+  const settleDebt = useCallback(async (groupId: string, token: string, to: string, amount: string) => {
     if (!isConnected || !address) throw new Error('Wallet not connected')
     if (!isCorrectNetwork) throw new Error('Please switch to BlockDAG network')
 
