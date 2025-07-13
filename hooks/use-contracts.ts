@@ -1,10 +1,9 @@
-import { useState, useEffect, useCallback, ReactNode,} from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { ethers } from 'ethers'
 import { useWallet } from '@/components/wallet-provider'
 import { getContract, getSigner, BLOCKDAG_NETWORK } from '@/lib/contracts'
 
 export interface Group {
-  [x: string]: ReactNode
   id: number
   name: string
   creator: string
@@ -194,6 +193,63 @@ export function useContracts() {
     }
   }, [isConnected, isCorrectNetwork])
 
+  const transferTokens = useCallback(async (to: string, amount: string) => {
+    if (!isConnected || !address) throw new Error('Wallet not connected')
+    if (!isCorrectNetwork) throw new Error('Please switch to BlockDAG network')
+
+    setLoading(true)
+    try {
+      const signer = await getSigner()
+      const contract = getContract('token', signer)
+      
+      const amountWei = ethers.parseEther(amount)
+      const tx = await contract.transfer(to, amountWei)
+      await tx.wait()
+
+      console.log('Tokens transferred successfully')
+      return tx.hash
+    } catch (error) {
+      console.error('Error transferring tokens:', error)
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }, [isConnected, address, isCorrectNetwork])
+
+  const testContractConnection = useCallback(async () => {
+    if (!isConnected || !address) throw new Error('Wallet not connected')
+    if (!isCorrectNetwork) throw new Error('Please switch to BlockDAG network')
+
+    try {
+      const signer = await getSigner()
+      
+      // Test token contract
+      const tokenContract = getContract('token', signer)
+      const tokenName = await tokenContract.name()
+      const tokenSymbol = await tokenContract.symbol()
+      const balance = await tokenContract.balanceOf(address)
+      
+      // Test core contract
+      const coreContract = getContract('core', signer)
+      
+      console.log('✅ Contract Connection Test Results:')
+      console.log(`Token Name: ${tokenName}`)
+      console.log(`Token Symbol: ${tokenSymbol}`)
+      console.log(`Your Balance: ${ethers.formatEther(balance)} ${tokenSymbol}`)
+      console.log('Core contract connected successfully')
+      
+      return {
+        success: true,
+        tokenName,
+        tokenSymbol,
+        balance: ethers.formatEther(balance)
+      }
+    } catch (error) {
+      console.error('❌ Contract connection failed:', error)
+      throw error
+    }
+  }, [isConnected, address, isCorrectNetwork])
+
   return {
     loading,
     groups,
@@ -203,6 +259,8 @@ export function useContracts() {
     addExpense,
     settleDebt,
     getSplitTokenBalance,
+    transferTokens,
+    testContractConnection,
     switchToBlockDAG,
     loadGroups,
     loadExpenses,

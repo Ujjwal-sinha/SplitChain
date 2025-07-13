@@ -10,6 +10,8 @@ import { Wallet, Copy, ExternalLink, Zap } from "lucide-react"
 import { useWallet } from "@/components/wallet-provider"
 import { useContracts } from "@/hooks/use-contracts"
 import { useState, useEffect } from "react"
+import { SendTokenModal } from "@/components/send-token-modal"
+import { ReceiveTokenModal } from "@/components/receive-token-modal"
 
 export function WalletCard() {
   const { address, ensName, balance, chainId } = useWallet()
@@ -118,24 +120,30 @@ export function WalletCard() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 bg-transparent font-mono"
-          >
-            {" "}
-            {/* Changed to slate */}
-            Send
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 bg-transparent font-mono"
-          >
-            {" "}
-            {/* Changed to slate */}
-            Receive
-          </Button>
+          <SendTokenModal 
+            trigger={
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 bg-transparent font-mono"
+              >
+                Send
+              </Button>
+            }
+            splitBalance={splitTokenBalance}
+          />
+          <ReceiveTokenModal 
+            trigger={
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 bg-transparent font-mono"
+              >
+                Receive
+              </Button>
+            }
+            address={address ?? undefined}
+          />
         </div>
       </CardContent>
     </Card>

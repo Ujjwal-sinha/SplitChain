@@ -21,8 +21,8 @@ interface DashboardProps {
 
 export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: DashboardProps) {
   const [showCreateGroup, setShowCreateGroup] = useState(false)
-  const { groups, loading, fetchGroups } = useContracts()
-  const { isConnected, isCorrectNetwork } = useWallet()
+  const { groups, loading, fetchGroups, createGroup, testContractConnection } = useContracts()
+  const { isConnected, isCorrectNetwork, address } = useWallet()
 
   useEffect(() => {
     if (isConnected && isCorrectNetwork) {
@@ -38,8 +38,36 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
   }
 
   const handleGroupCreated = () => {
+    // Add the new group to the list
     setShowCreateGroup(false)
     fetchGroups() // Refresh groups after creation
+  }
+
+  const testGroupCreation = async () => {
+    if (!address) return
+
+    try {
+      const testMembers = [
+        address,
+        "0x742d35Cc8C8B4E4dA4E5a8c4e3B2e4b3c9C8B4E4", // Test address 1
+        "0x853e46Dd9D9F5F5eE5e5F9F5f4C4F5c4D4D9D5F5"  // Test address 2
+      ]
+
+      await createGroup("Test Group " + Date.now(), testMembers)
+      console.log("Test group created successfully!")
+    } catch (error) {
+      console.error("Error creating test group:", error)
+    }
+  }
+
+  const testContracts = async () => {
+    try {
+      const result = await testContractConnection()
+      alert(`✅ Contracts Working!\nToken: ${result.tokenName} (${result.tokenSymbol})\nBalance: ${result.balance}`)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      alert(`❌ Contract Test Failed: ${errorMessage}`)
+    }
   }
 
   return (
@@ -191,10 +219,26 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
               <div className="col-span-full text-center py-12">
                 <Users className="w-16 h-16 text-green-400/50 mx-auto mb-4" />
                 <p className="text-green-400/70 font-mono mb-4">No groups found</p>
-                <Button onClick={handleCreateGroup} className="btn-matrix font-mono">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Your First Group
-                </Button>
+                <div className="space-y-2">
+                  <Button onClick={handleCreateGroup} className="btn-matrix font-mono">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Your First Group
+                  </Button>
+                  <Button 
+                    onClick={testGroupCreation} 
+                    variant="outline"
+                    className="w-full border-green-500/50 text-green-400 hover:bg-green-500/10 font-mono bg-transparent"
+                  >
+                    Test Group Creation
+                  </Button>
+                  <Button 
+                    onClick={testContracts} 
+                    variant="outline"
+                    className="w-full border-blue-500/50 text-blue-400 hover:bg-blue-500/10 font-mono bg-transparent"
+                  >
+                    Test Contract Connection
+                  </Button>
+                </div>
               </div>
             ) : (
               groups.map((group) => {
