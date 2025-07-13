@@ -122,7 +122,7 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
       description: "AI-powered expense splitting with automatic calculations",
       color: "from-slate-500 to-slate-400", // Changed to slate
     },
-    {
+    { 
       icon: Receipt,
       title: "Zero Trust",
       description: "Blockchain-secured settlements with cryptographic proof",
