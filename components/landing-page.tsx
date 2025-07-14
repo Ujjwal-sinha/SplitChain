@@ -96,10 +96,11 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
   const [currentInfoIndex, setCurrentInfoIndex] = useState(0)
 
   const infoMessages = [
-    "Decentralized Expense Sharing",
-    "Gasless Transactions on BlockDAG",
-    "Trustless Settlements",
-    "AI-Powered Expense Splitting",
+    "Web3-Native Expense Protocol",
+    "Zero-Gas Layer 2 Transactions",
+    "Cryptographically Secure Settlements",
+    "Neural-Powered Split Optimization",
+    "Built for DAOs and DeFi",
   ]
 
   useEffect(() => {
@@ -111,30 +112,30 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
 
   const features = [
     {
-      icon: Users,
+      icon: Shield,
       title: "Decentralized Groups",
-      description: "Create trustless expense groups with smart contract automation",
+      description: "Create trustless expense groups secured by blockchain smart contracts",
       color: "from-green-500 to-green-400",
     },
     {
-      icon: Receipt,
-      title: "Smart Expenses",
-      description: "AI-powered expense splitting with automatic calculations",
-      color: "from-slate-500 to-slate-400", // Changed to slate
+      icon: Cpu,
+      title: "AI-Powered Splitting",
+      description: "Neural networks optimize expense distribution automatically",
+      color: "from-slate-500 to-slate-400",
     },
-    { 
-      icon: Receipt,
-      title: "Zero Trust",
-      description: "Blockchain-secured settlements with cryptographic proof",
+    {
+      icon: Network,
+      title: "Zero Trust Protocol",
+      description: "Cryptographically secured settlements with mathematical proof",
       color: "from-green-600 to-green-500",
     },
   ]
 
   const stats = [
-    { label: "Total Volume", value: "$2.4M", icon: DollarSign, color: "from-green-500 to-green-400" }, // Added color
-    { label: "Active Groups", value: "1,247", icon: Users, color: "from-slate-500 to-slate-400" }, // Added color, changed to slate
-    { label: "Settlements", value: "8,932", icon: TrendingUp, color: "from-green-600 to-green-500" }, // Added color
-    { label: "Gas Saved", value: "67%", icon: Zap, color: "from-slate-300 to-slate-200" }, // Added color, changed to slate
+    { label: "Total Volume", value: "$4.2M", icon: DollarSign, color: "from-green-500 to-green-400" },
+    { label: "Active DAOs", value: "2,481", icon: Users, color: "from-slate-500 to-slate-400" },
+    { label: "Smart Settlements", value: "12,932", icon: TrendingUp, color: "from-green-600 to-green-500" },
+    { label: "Gas Optimized", value: "94%", icon: Zap, color: "from-slate-300 to-slate-200" },
   ]
 
   const howItWorksSteps = [
@@ -252,7 +253,7 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
           <div className="max-w-7xl mx-auto text-center">
             <div className="mb-8">
               <div className="inline-block px-4 py-2 rounded-full glass-green neon-border mb-6">
-                <span className="text-green-400 font-mono text-sm">🚀 Now Live on BlockDAG Mainnet</span>
+                <span className="text-green-400 font-mono text-sm">🚀 Now Live on BlockDAG Testnet</span>
               </div>
             </div>
 
@@ -318,7 +319,7 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
                     <div
                       className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-lg flex items-center justify-center mx-auto mb-6 ${hoveredFeature === index ? "neon-glow" : ""} transition-all duration-300`}
                     >
-                    
+                      <feature.icon className="w-8 h-8 text-black" />
                     </div>
                     <h3 className="text-xl font-semibold neon-text mb-3 font-mono">{feature.title}</h3>
                     <p className="text-green-400/80">{feature.description}</p>

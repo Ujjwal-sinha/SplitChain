@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, ReactNode } from 'react'
 import { ethers } from 'ethers'
 import { useWallet } from '@/components/wallet-provider'
 import { getContract, getSigner, BLOCKDAG_NETWORK } from '@/lib/contracts'
 // Remove direct database imports - we'll use API routes
 
 export interface Group {
+  [x: string]: ReactNode
   id: string
   name: string
   creator: string

@@ -54,7 +54,7 @@ export function Footer({ onPageChange }: FooterProps) {
 
         {/* Copyright Info */}
         <div className="text-green-400/70 font-mono text-sm pt-4 border-t border-green-500/10 w-full max-w-md">
-          © 2024 SplitChain Protocol. Decentralized & Open Source.
+          © 2025 SplitChain Protocol. Decentralized & Open Source.
         </div>
       </div>
     </footer>

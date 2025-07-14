@@ -33,7 +33,7 @@ export function GroupManagement({ onPageChange }: GroupManagementProps) {
     }
   }, [isConnected, fetchGroups])
 
-  const selectedGroupData = groups.find((g) => g.id.toString() === selectedGroup)
+  const selectedGroupData = groups.find((g) => g.id && g.id.toString() === selectedGroup)
 
   const handleAddMember = () => {
     if (newMemberAddress.trim()) {
