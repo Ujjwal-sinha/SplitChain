@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Sidebar } from "@/components/sidebar"
+import { useWallet } from "@/components/wallet-provider"
 import {
   BarChart,
   Bar,
@@ -48,17 +49,22 @@ const settlementData = [
 ]
 
 export function Analytics({ onPageChange }: AnalyticsProps) {
+  const { address, balance, ensName } = useWallet()
+
   return (
     <div className="flex min-h-screen matrix-bg">
       <Sidebar onPageChange={onPageChange} currentPage="analytics" />
-      {/* Removed <div className="digital-grid-overlay" /> */}
       <main className="flex-1 p-6 ml-64">
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header */}
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold neon-text font-mono mb-2">Analytics</h1>
-              <p className="text-green-400/70 font-mono">Insights into your spending patterns and group dynamics</p>
+              <p className="text-green-400/70 font-mono">
+                {address
+                  ? `Wallet: ${ensName || `${address.slice(0, 6)}...${address.slice(-4)}`}`
+                  : "Insights into your spending patterns and group dynamics"}
+              </p>
             </div>
             <Button
               onClick={() => onPageChange("dashboard")}
@@ -75,8 +81,8 @@ export function Analytics({ onPageChange }: AnalyticsProps) {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-green-400/70 text-sm font-mono">Total Expenses</p>
-                    <p className="text-2xl font-bold neon-text font-mono">$3,612</p>
+                    <p className="text-green-400/70 text-sm font-mono">Total Balance</p>
+                    <p className="text-2xl font-bold neon-text font-mono">{balance ? `${balance} BDAG` : "$3,612"}</p>
                   </div>
                   <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-400 rounded-lg flex items-center justify-center">
                     <DollarSign className="w-6 h-6 text-black" />
@@ -90,23 +96,17 @@ export function Analytics({ onPageChange }: AnalyticsProps) {
             </Card>
 
             <Card className="glass-white neon-white-border card-hover">
-              {" "}
-              {/* Changed to glass-white */}
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-slate-400/70 text-sm font-mono">Active Groups</p> {/* Changed text color */}
-                    <p className="text-2xl font-bold neon-white-text font-mono">4</p> {/* Changed text color */}
+                    <p className="text-slate-400/70 text-sm font-mono">Active Groups</p>
+                    <p className="text-2xl font-bold neon-white-text font-mono">4</p>
                   </div>
                   <div className="w-12 h-12 bg-gradient-to-r from-slate-400 to-slate-300 rounded-lg flex items-center justify-center">
-                    {" "}
-                    {/* Changed gradient */}
                     <Users className="w-6 h-6 text-black" />
                   </div>
                 </div>
                 <div className="flex items-center mt-2 text-slate-400 text-sm font-mono">
-                  {" "}
-                  {/* Changed text color */}
                   <TrendingUp className="w-4 h-4 mr-1" />2 new this month
                 </div>
               </CardContent>
@@ -131,24 +131,17 @@ export function Analytics({ onPageChange }: AnalyticsProps) {
             </Card>
 
             <Card className="glass-white neon-white-border card-hover">
-              {" "}
-              {/* Changed to glass-white */}
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-slate-400/70 text-sm font-mono">Avg. Settlement Time</p>{" "}
-                    {/* Changed text color */}
-                    <p className="text-2xl font-bold neon-white-text font-mono">2.3d</p> {/* Changed text color */}
+                    <p className="text-slate-400/70 text-sm font-mono">Avg. Settlement Time</p>
+                    <p className="text-2xl font-bold neon-white-text font-mono">2.3d</p>
                   </div>
                   <div className="w-12 h-12 bg-gradient-to-r from-slate-300 to-slate-200 rounded-lg flex items-center justify-center">
-                    {" "}
-                    {/* Changed gradient */}
                     <Clock className="w-6 h-6 text-black" />
                   </div>
                 </div>
                 <div className="flex items-center mt-2 text-slate-400 text-sm font-mono">
-                  {" "}
-                  {/* Changed text color */}
                   <TrendingUp className="w-4 h-4 mr-1" />
                   -0.5d faster
                 </div>
@@ -181,11 +174,8 @@ export function Analytics({ onPageChange }: AnalyticsProps) {
             </Card>
 
             <Card className="glass-white neon-white-border">
-              {" "}
-              {/* Changed to glass-white */}
               <CardHeader>
-                <CardTitle className="neon-white-text font-mono">Expenses by Group</CardTitle>{" "}
-                {/* Changed to neon-white-text */}
+                <CardTitle className="neon-white-text font-mono">Expenses by Group</CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -209,7 +199,7 @@ export function Analytics({ onPageChange }: AnalyticsProps) {
                   {groupData.map((group, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: group.color }} />
-                      <span className="text-sm text-slate-300 font-mono">{group.name}</span> {/* Changed to slate */}
+                      <span className="text-sm text-slate-300 font-mono">{group.name}</span>
                     </div>
                   ))}
                 </div>
