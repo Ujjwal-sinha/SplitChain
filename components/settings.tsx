@@ -6,14 +6,17 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { CardHeader, CardTitle, CardContent, Card } from "@/components/ui/card"
-import { Sidebar } from "@/components/sidebar" // Corrected import path for Sidebar
-import { User, Shield, Bell, Code, Zap, Globe, Lock, Eye, EyeOff, Copy, ExternalLink } from "lucide-react" // Corrected import for Lucide icons
+import { Sidebar } from "@/components/sidebar"
+import { User, Shield, Bell, Code, Zap, Globe, Lock, Eye, EyeOff, Copy, ExternalLink } from "lucide-react"
+import { useWallet } from "./wallet-provider" // Import the useWallet hook
 
 interface SettingsProps {
   onPageChange: (page: "landing" | "dashboard" | "group" | "analytics" | "settings") => void
 }
 
 export function Settings({ onPageChange }: SettingsProps) {
+  const { address, ensName, isCorrectNetwork, disconnectWallet } = useWallet() // Get wallet data
+
   const [notifications, setNotifications] = useState({
     expenses: true,
     settlements: true,
@@ -28,6 +31,13 @@ export function Settings({ onPageChange }: SettingsProps) {
   })
 
   const [showPrivateKey, setShowPrivateKey] = useState(false)
+
+  const handleCopyAddress = () => {
+    if (address) {
+      navigator.clipboard.writeText(address)
+      // Add toast notification for successful copy
+    }
+  }
 
   return (
     <div className="flex min-h-screen matrix-bg">
@@ -57,7 +67,7 @@ export function Settings({ onPageChange }: SettingsProps) {
                   <Input
                     id="displayName"
                     placeholder="Enter your display name..."
-                    defaultValue="crypto_user.eth"
+                    defaultValue={ensName || "crypto_user.eth"}
                     className="bg-black/50 border-green-500/30 text-green-400 placeholder:text-green-400/50 font-mono"
                   />
                 </div>
@@ -89,61 +99,69 @@ export function Settings({ onPageChange }: SettingsProps) {
               <div className="flex items-center justify-between p-4 rounded-lg glass-green border border-green-500/20">
                 <div>
                   <p className="font-semibold neon-text font-mono">ENS Name</p>
-                  <p className="text-sm text-green-400/70 font-mono">crypto_user.eth</p>
+                  <p className="text-sm text-green-400/70 font-mono">{ensName || "Not available"}</p>
                 </div>
-                <Badge className="bg-green-500/20 text-green-300 border-green-500/30 font-mono">Verified</Badge>
+                <Badge className="bg-green-500/20 text-green-300 border-green-500/30 font-mono">
+                  {ensName ? "Verified" : "Unverified"}
+                </Badge>
               </div>
             </CardContent>
           </Card>
 
           {/* Wallet & Security */}
           <Card className="glass-white neon-white-border">
-            {/* Changed to glass-white and neon-white-border */}
             <CardHeader>
               <CardTitle className="neon-white-text font-mono flex items-center">
-                {/* Changed to neon-white-text */}
-                <Shield className="w-5 h-5 mr-2 text-slate-400" /> {/* Changed to slate */}
+                <Shield className="w-5 h-5 mr-2 text-slate-400" />
                 Wallet & Security
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="p-4 rounded-lg glass-white border border-slate-500/20">
-                {/* Changed to glass-white */}
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <p className="font-semibold neon-white-text font-mono">Connected Wallet</p>{" "}
-                    {/* Changed to neon-white-text */}
-                    <p className="text-sm text-slate-400/70 font-mono">0x1234...5678</p> {/* Changed to slate */}
+                    <p className="font-semibold neon-white-text font-mono">Connected Wallet</p>
+                    <p className="text-sm text-slate-400/70 font-mono truncate">
+                      {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "Not Connected"}
+                    </p>
                   </div>
                   <div className="flex space-x-2">
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-slate-400/70 hover:text-slate-400">
-                      {/* Changed to slate */}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-slate-400/70 hover:text-slate-400"
+                      onClick={handleCopyAddress}
+                      disabled={!address}
+                    >
                       <Copy className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-slate-400/70 hover:text-slate-400">
-                      {/* Changed to slate */}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-slate-400/70 hover:text-slate-400"
+                      disabled={!address}
+                    >
                       <ExternalLink className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full" />
-                  <span className="text-sm text-slate-400 font-mono">Connected to BlockDAG Network</span>{" "}
-                  {/* Changed to slate */}
+                  <div className={`w-2 h-2 rounded-full ${isCorrectNetwork ? "bg-green-400" : "bg-red-500"}`} />
+                  <span className="text-sm text-slate-400 font-mono">
+                    {isCorrectNetwork ? "Connected to BlockDAG Network" : "Wrong Network"}
+                  </span>
                 </div>
               </div>
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-semibold neon-white-text font-mono">Two-Factor Authentication</p>{" "}
-                    {/* Changed to neon-white-text */}
-                    <p className="text-sm text-slate-400/70 font-mono">Add an extra layer of security</p>{" "}
-                    {/* Changed to slate */}
+                    <p className="font-semibold neon-white-text font-mono">Two-Factor Authentication</p>
+                    <p className="text-sm text-slate-400/70 font-mono">Add an extra layer of security</p>
                   </div>
                   <Button
                     variant="outline"
-                    className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 font-mono bg-transparent" /* Changed to slate */
+                    className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 font-mono bg-transparent"
                   >
                     Enable 2FA
                   </Button>
@@ -151,38 +169,33 @@ export function Settings({ onPageChange }: SettingsProps) {
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-semibold neon-white-text font-mono">Hardware Wallet</p>{" "}
-                    {/* Changed to neon-white-text */}
+                    <p className="font-semibold neon-white-text font-mono">Hardware Wallet</p>
                     <p className="text-sm text-slate-400/70 font-mono">
                       Connect a hardware wallet for enhanced security
-                    </p>{" "}
-                    {/* Changed to slate */}
+                    </p>
                   </div>
                   <Button
                     variant="outline"
-                    className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 font-mono bg-transparent" /* Changed to slate */
+                    className="border-slate-500/50 text-slate-400 hover:bg-slate-500/10 font-mono bg-transparent"
                   >
                     Connect
                   </Button>
                 </div>
 
                 <div className="p-4 rounded-lg glass-white border border-slate-500/20">
-                  {/* Changed to glass-white */}
                   <div className="flex items-center justify-between mb-2">
-                    <p className="font-semibold neon-white-text font-mono">Private Key</p>{" "}
-                    {/* Changed to neon-white-text */}
+                    <p className="font-semibold neon-white-text font-mono">Private Key</p>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setShowPrivateKey(!showPrivateKey)}
-                      className="text-slate-400/70 hover:text-slate-400" /* Changed to slate */
+                      className="text-slate-400/70 hover:text-slate-400"
                     >
                       {showPrivateKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </Button>
                   </div>
                   <p className="text-sm text-slate-400/70 font-mono">
-                    {/* Changed to slate */}
-                    {showPrivateKey ? "0x1234567890abcdef..." : "••••••••••••••••••••••••••••••••"}
+                    {showPrivateKey ? "Your private key is managed by your wallet" : "••••••••••••••••••••••••••••••••"}
                   </p>
                 </div>
               </div>
@@ -246,21 +259,17 @@ export function Settings({ onPageChange }: SettingsProps) {
 
           {/* Privacy */}
           <Card className="glass-white neon-white-border">
-            {/* Changed to glass-white and neon-white-border */}
             <CardHeader>
               <CardTitle className="neon-white-text font-mono flex items-center">
-                {/* Changed to neon-white-text */}
-                <Lock className="w-5 h-5 mr-2 text-slate-400" /> {/* Changed to slate */}
+                <Lock className="w-5 h-5 mr-2 text-slate-400" />
                 Privacy Settings
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold neon-white-text font-mono">Public Profile</p>{" "}
-                  {/* Changed to neon-white-text */}
-                  <p className="text-sm text-slate-400/70 font-mono">Make your profile visible to other users</p>{" "}
-                  {/* Changed to slate */}
+                  <p className="font-semibold neon-white-text font-mono">Public Profile</p>
+                  <p className="text-sm text-slate-400/70 font-mono">Make your profile visible to other users</p>
                 </div>
                 <Switch
                   checked={privacy.publicProfile}
@@ -270,10 +279,8 @@ export function Settings({ onPageChange }: SettingsProps) {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold neon-white-text font-mono">Show Balance</p>{" "}
-                  {/* Changed to neon-white-text */}
-                  <p className="text-sm text-slate-400/70 font-mono">Display your balance in group views</p>{" "}
-                  {/* Changed to slate */}
+                  <p className="font-semibold neon-white-text font-mono">Show Balance</p>
+                  <p className="text-sm text-slate-400/70 font-mono">Display your balance in group views</p>
                 </div>
                 <Switch
                   checked={privacy.showBalance}
@@ -283,10 +290,8 @@ export function Settings({ onPageChange }: SettingsProps) {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold neon-white-text font-mono">Allow Group Invites</p>{" "}
-                  {/* Changed to neon-white-text */}
-                  <p className="text-sm text-slate-400/70 font-mono">Allow others to invite you to groups</p>{" "}
-                  {/* Changed to slate */}
+                  <p className="font-semibold neon-white-text font-mono">Allow Group Invites</p>
+                  <p className="text-sm text-slate-400/70 font-mono">Allow others to invite you to groups</p>
                 </div>
                 <Switch
                   checked={privacy.allowInvites}
@@ -342,14 +347,11 @@ export function Settings({ onPageChange }: SettingsProps) {
               </div>
 
               <div className="p-4 rounded-lg glass-white border border-slate-500/20">
-                {/* Changed to glass-white */}
                 <div className="flex items-center space-x-2 mb-2">
-                  <Globe className="w-5 h-5 text-slate-400" /> {/* Changed to slate */}
-                  <span className="font-semibold neon-white-text font-mono">Multi-Chain Support</span>{" "}
-                  {/* Changed to neon-white-text */}
+                  <Globe className="w-5 h-5 text-slate-400" />
+                  <span className="font-semibold neon-white-text font-mono">Multi-Chain Support</span>
                 </div>
-                <p className="text-sm text-slate-400/70 mb-3">Enable cross-chain functionality (Beta)</p>{" "}
-                {/* Changed to slate */}
+                <p className="text-sm text-slate-400/70 mb-3">Enable cross-chain functionality (Beta)</p>
                 <Switch />
               </div>
             </CardContent>
