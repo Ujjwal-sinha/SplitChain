@@ -161,6 +161,27 @@ export async function addExpense(
   }
 }
 
+export async function getExpenses() {
+  const { db } = await connectToDatabase()
+
+  const expenses = await db
+    .collection('expenses')
+    .find()
+    .sort({ timestamp: -1 })
+    .toArray()
+
+  return expenses.map(expense => ({
+    id: expense._id,
+    group_id: expense.group_id,
+    payer: expense.payer,
+    amount: expense.amount,
+    token: expense.token,
+    description: expense.description,
+    timestamp: expense.timestamp,
+    tx_hash: expense.tx_hash,
+  }))
+}
+
 export async function getExpensesByGroup(groupId: string) {
   const { db } = await connectToDatabase()
   const { ObjectId } = require('mongodb')

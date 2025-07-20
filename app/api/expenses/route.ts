@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getExpensesByGroup, addExpense, initializeDatabase } from '@/lib/database'
+import { getExpenses, getExpensesByGroup, addExpense, initializeDatabase } from '@/lib/database'
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,13 +7,14 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const groupId = searchParams.get('groupId')
-    
-    if (!groupId) {
-      return NextResponse.json({ error: 'Group ID is required' }, { status: 400 })
-    }
 
-    const expenses = await getExpensesByGroup(groupId)
-    return NextResponse.json(expenses)
+    if (groupId) {
+      const expenses = await getExpensesByGroup(groupId)
+      return NextResponse.json(expenses)
+    } else {
+      const expenses = await getExpenses()
+      return NextResponse.json(expenses)
+    }
   } catch (error) {
     console.error('Error fetching expenses:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
