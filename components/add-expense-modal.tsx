@@ -13,7 +13,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useContracts } from "@/hooks/use-contracts"
-import { Loader2, Plus } from "lucide-react"
+import { Loader2, Plus, RefreshCw } from "lucide-react"
+import { CONTRACT_ADDRESSES } from "@/lib/contracts"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 interface AddExpenseModalProps {
   isOpen: boolean
@@ -24,6 +26,7 @@ interface AddExpenseModalProps {
 export function AddExpenseModal({ isOpen, onClose, groupId }: AddExpenseModalProps) {
   const [description, setDescription] = useState("")
   const [amount, setAmount] = useState("")
+  const [tokenAddress, setTokenAddress] = useState("0x0000000000000000000000000000000000000000")
   const [loading, setLoading] = useState(false)
   const { addExpense, fetchExpenses } = useContracts()
 
@@ -33,15 +36,14 @@ export function AddExpenseModal({ isOpen, onClose, groupId }: AddExpenseModalPro
       try {
         await addExpense(
           groupId,
-          description,
           amount,
-          "0x0000000000000000000000000000000000000000" // ETH address
+          tokenAddress,
+          description
         )
-        await fetchExpenses() // Refresh expenses after adding
+        await fetchExpenses(groupId)
         onClose()
       } catch (error) {
         console.error("Error adding expense:", error)
-        // You might want to show a toast notification here
       } finally {
         setLoading(false)
       }
@@ -69,7 +71,7 @@ export function AddExpenseModal({ isOpen, onClose, groupId }: AddExpenseModalPro
           </div>
           <div className="space-y-2">
             <Label htmlFor="amount" className="text-green-400 font-mono">
-              Amount (in Split Tokens)
+              Amount
             </Label>
             <Input
               id="amount"
@@ -79,6 +81,27 @@ export function AddExpenseModal({ isOpen, onClose, groupId }: AddExpenseModalPro
               onChange={(e) => setAmount(e.target.value)}
               className="bg-black/50 border-green-500/30 text-green-400 placeholder:text-green-400/50 font-mono"
             />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-green-400 font-mono">Token</Label>
+            <RadioGroup
+              defaultValue={tokenAddress}
+              onValueChange={setTokenAddress}
+              className="flex space-x-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="0x0000000000000000000000000000000000000000" id="native" />
+                <Label htmlFor="native" className="text-green-400 font-mono">
+                  Native (ETH/BDAG)
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value={CONTRACT_ADDRESSES.token} id="split-token" />
+                <Label htmlFor="split-token" className="text-green-400 font-mono">
+                  Split Token (ST)
+                </Label>
+              </div>
+            </RadioGroup>
           </div>
         </div>
         <DialogFooter>

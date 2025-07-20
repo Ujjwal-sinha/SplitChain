@@ -77,7 +77,7 @@ export function useContracts() {
     }
   }, [isConnected, address, isCorrectNetwork])
 
-  const addExpense = useCallback(async (groupId: string, description: string, amount: string, token: string) => {
+  const addExpense = useCallback(async (groupId: string, amount: string, token: string, description: string) => {
     if (!isConnected || !address) throw new Error('Wallet not connected')
     if (!isCorrectNetwork) throw new Error('Please switch to BlockDAG network')
 
@@ -87,7 +87,7 @@ export function useContracts() {
       const contract = getContract('core', signer)
 
       const amountWei = ethers.parseEther(amount)
-      const tx = await contract.addExpense(groupId, description, amountWei, token, {
+      const tx = await contract.addExpense(groupId, amountWei, token, description, {
         value: token === '0x0000000000000000000000000000000000000000' ? amountWei : 0
       })
       await tx.wait()
@@ -115,6 +115,22 @@ export function useContracts() {
       setLoading(false)
     }
   }, [isConnected, address, isCorrectNetwork])
+
+    const getSplitTokenBalance = useCallback(async (userAddress: string) => {
+    if (!isConnected || !userAddress) return '0.0000'
+    if (!isCorrectNetwork) return '0.0000'
+
+    try {
+      const signer = await getSigner()
+      const contract = getContract('token', signer)
+      
+      const balance = await contract.balanceOf(userAddress)
+      return ethers.formatEther(balance)
+    } catch (error) {
+      console.error('Error fetching split token balance:', error)
+      return '0.0000'
+    }
+  }, [isConnected, isCorrectNetwork])
 
   const fetchGroups = useCallback(async () => {
     if (!isConnected || !address) return
@@ -202,6 +218,7 @@ export function useContracts() {
     createGroup,
     addExpense,
     settleDebt,
+      getSplitTokenBalance,
     fetchGroups,
     fetchExpenses
   }
