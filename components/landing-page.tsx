@@ -473,7 +473,7 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
         <footer className="glass-green border-t border-green-500/20 p-6">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
             <div className="text-green-400/70 font-mono text-sm">
-              © 2024 SplitChain Protocol. Decentralized & Open Source.
+              © 2025 SplitChain Protocol. Decentralized & Open Source.
             </div>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="text-green-400/70 hover:text-green-400 font-mono text-sm">
