@@ -1,88 +1,119 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Sidebar } from "@/components/sidebar"
-import { useWallet } from "@/components/wallet-provider"
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
-} from "recharts"
-import { TrendingUp, Users, DollarSign, Clock } from "lucide-react"
+import { useUser } from "@civic/auth-web3/react"
+import { ChevronLeft, TrendingUp, TrendingDown, DollarSign, Users, Activity, BarChart3, PieChart, LineChart } from "lucide-react"
 
 interface AnalyticsProps {
-  onPageChange: (page: "landing" | "dashboard" | "group" | "analytics") => void
+  onPageChange: (page: "landing" | "dashboard" | "group" | "analytics" | "settings") => void
 }
 
-const expenseData = [
-  { month: "Jan", amount: 450 },
-  { month: "Feb", amount: 320 },
-  { month: "Mar", amount: 680 },
-  { month: "Apr", amount: 520 },
-  { month: "May", amount: 890 },
-  { month: "Jun", amount: 750 },
-]
-
-const groupData = [
-  { name: "Weekend Trip", value: 35, color: "#00ff88" }, // Green
-  { name: "Office Lunch", value: 25, color: "#00e676" }, // Lighter Green
-  { name: "Apartment Bills", value: 20, color: "#00b359" }, // Darker Green
-  { name: "Birthday Party", value: 20, color: "#00803d" }, // Even Darker Green
-]
-
-const settlementData = [
-  { month: "Jan", settled: 85, pending: 15 },
-  { month: "Feb", settled: 92, pending: 8 },
-  { month: "Mar", settled: 78, pending: 22 },
-  { month: "Apr", settled: 95, pending: 5 },
-  { month: "May", settled: 88, pending: 12 },
-  { month: "Jun", settled: 91, pending: 9 },
-]
-
 export function Analytics({ onPageChange }: AnalyticsProps) {
-  const { address, balance, ensName } = useWallet()
+  const [timeRange, setTimeRange] = useState<"7d" | "30d" | "90d" | "1y">("30d")
+  const { user } = useUser()
+
+  // Use Civic Auth user information
+  const address = (user as any)?.wallet?.address || ""
+  const balance = "0.00" // Placeholder for now
+  const ensName = user?.name || ""
+
+  // Mock data for analytics
+  const analyticsData = {
+    totalExpenses: 1250.75,
+    totalSettlements: 890.50,
+    activeGroups: 3,
+    totalMembers: 12,
+    expenseTrend: [
+      { date: "2024-01", amount: 150 },
+      { date: "2024-02", amount: 200 },
+      { date: "2024-03", amount: 180 },
+      { date: "2024-04", amount: 220 },
+      { date: "2024-05", amount: 250 },
+      { date: "2024-06", amount: 300 },
+    ],
+    categoryBreakdown: [
+      { category: "Food & Dining", amount: 450, percentage: 36 },
+      { category: "Transportation", amount: 300, percentage: 24 },
+      { category: "Entertainment", amount: 250, percentage: 20 },
+      { category: "Utilities", amount: 150, percentage: 12 },
+      { category: "Other", amount: 100, percentage: 8 },
+    ],
+    recentActivity: [
+      { type: "expense", description: "Lunch at Chipotle", amount: 25.50, group: "Work Team", time: "2 hours ago" },
+      { type: "settlement", description: "Paid back Sarah", amount: 15.00, group: "Roommates", time: "1 day ago" },
+      { type: "expense", description: "Uber ride", amount: 18.75, group: "Weekend Trip", time: "2 days ago" },
+    ]
+  }
 
   return (
     <div className="flex min-h-screen matrix-bg">
       <Sidebar onPageChange={onPageChange} currentPage="analytics" />
-      <main className="flex-1 p-6 ml-64">
+      <main className="flex-1 p-6 ml-64 animate-in fade-in-0 zoom-in-95 duration-500">
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header */}
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold neon-text font-mono mb-2">Analytics</h1>
-              <p className="text-green-400/70 font-mono">
-                {address
-                  ? `Wallet: ${ensName || `${address.slice(0, 6)}...${address.slice(-4)}`}`
-                  : "Insights into your spending patterns and group dynamics"}
-              </p>
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onPageChange("dashboard")}
+                className="text-slate-400 hover:text-white mr-2"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </Button>
+              <div>
+                <h1 className="text-3xl font-bold neon-text font-mono mb-2">Analytics</h1>
+                <p className="text-green-400/70 font-mono">Track your expense patterns and insights</p>
+              </div>
             </div>
-            <Button
-              onClick={() => onPageChange("dashboard")}
-              variant="outline"
-              className="border-green-500/50 text-green-400 hover:bg-green-500/10 font-mono bg-transparent neon-border"
-            >
-              Back to Dashboard
-            </Button>
+            <div className="flex space-x-2">
+              {(["7d", "30d", "90d", "1y"] as const).map((range) => (
+                <Button
+                  key={range}
+                  variant={timeRange === range ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setTimeRange(range)}
+                  className={timeRange === range ? "btn-matrix font-mono" : "border-green-500/50 text-green-400 hover:bg-green-500/10 font-mono"}
+                >
+                  {range}
+                </Button>
+              ))}
+            </div>
           </div>
 
+          {/* User Info */}
+          {user && (
+            <Card className="glass-green neon-border mb-6">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-green-300 font-mono font-semibold">
+                      {ensName || 'Anonymous User'}
+                    </p>
+                    <p className="text-green-400/70 font-mono text-sm">
+                      {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'No wallet connected'}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-green-300 font-mono font-semibold">${balance}</p>
+                    <p className="text-green-400/70 font-mono text-sm">Balance</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Key Metrics */}
-          <div className="grid md:grid-cols-4 gap-4">
+          <div className="grid md:grid-cols-4 gap-4 mb-8">
             <Card className="glass-green neon-border card-hover">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-green-400/70 text-sm font-mono">Total Balance</p>
-                    <p className="text-2xl font-bold neon-text font-mono">{balance ? `${balance} BDAG` : "$3,612"}</p>
+                    <p className="text-green-400/70 text-sm font-mono">Total Expenses</p>
+                    <p className="text-2xl font-bold neon-text font-mono">${analyticsData.totalExpenses}</p>
                   </div>
                   <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-400 rounded-lg flex items-center justify-center">
                     <DollarSign className="w-6 h-6 text-black" />
@@ -90,7 +121,7 @@ export function Analytics({ onPageChange }: AnalyticsProps) {
                 </div>
                 <div className="flex items-center mt-2 text-green-400 text-sm font-mono">
                   <TrendingUp className="w-4 h-4 mr-1" />
-                  +12% from last month
+                  +12.5% vs last month
                 </div>
               </CardContent>
             </Card>
@@ -99,15 +130,16 @@ export function Analytics({ onPageChange }: AnalyticsProps) {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-slate-400/70 text-sm font-mono">Active Groups</p>
-                    <p className="text-2xl font-bold neon-white-text font-mono">4</p>
+                    <p className="text-slate-400/70 text-sm font-mono">Settlements</p>
+                    <p className="text-2xl font-bold neon-white-text font-mono">${analyticsData.totalSettlements}</p>
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-slate-400 to-slate-300 rounded-lg flex items-center justify-center">
-                    <Users className="w-6 h-6 text-black" />
+                  <div className="w-12 h-12 bg-gradient-to-r from-slate-500 to-green-500 rounded-lg flex items-center justify-center">
+                    <Activity className="w-6 h-6 text-black" />
                   </div>
                 </div>
                 <div className="flex items-center mt-2 text-slate-400 text-sm font-mono">
-                  <TrendingUp className="w-4 h-4 mr-1" />2 new this month
+                  <TrendingDown className="w-4 h-4 mr-1" />
+                  -5.2% vs last month
                 </div>
               </CardContent>
             </Card>
@@ -116,16 +148,16 @@ export function Analytics({ onPageChange }: AnalyticsProps) {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-green-400/70 text-sm font-mono">Settlement Rate</p>
-                    <p className="text-2xl font-bold neon-text font-mono">91%</p>
+                    <p className="text-green-400/70 text-sm font-mono">Active Groups</p>
+                    <p className="text-2xl font-bold neon-text font-mono">{analyticsData.activeGroups}</p>
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-green-500 rounded-lg flex items-center justify-center">
-                    <TrendingUp className="w-6 h-6 text-black" />
+                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-400 rounded-lg flex items-center justify-center">
+                    <Users className="w-6 h-6 text-black" />
                   </div>
                 </div>
                 <div className="flex items-center mt-2 text-green-400 text-sm font-mono">
                   <TrendingUp className="w-4 h-4 mr-1" />
-                  +3% improvement
+                  +1 new this month
                 </div>
               </CardContent>
             </Card>
@@ -134,72 +166,71 @@ export function Analytics({ onPageChange }: AnalyticsProps) {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-slate-400/70 text-sm font-mono">Avg. Settlement Time</p>
-                    <p className="text-2xl font-bold neon-white-text font-mono">2.3d</p>
+                    <p className="text-slate-400/70 text-sm font-mono">Total Members</p>
+                    <p className="text-2xl font-bold neon-white-text font-mono">{analyticsData.totalMembers}</p>
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-slate-300 to-slate-200 rounded-lg flex items-center justify-center">
-                    <Clock className="w-6 h-6 text-black" />
+                  <div className="w-12 h-12 bg-gradient-to-r from-slate-500 to-green-500 rounded-lg flex items-center justify-center">
+                    <Users className="w-6 h-6 text-black" />
                   </div>
                 </div>
                 <div className="flex items-center mt-2 text-slate-400 text-sm font-mono">
                   <TrendingUp className="w-4 h-4 mr-1" />
-                  -0.5d faster
+                  +3 new members
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Charts Row 1 */}
-          <div className="grid lg:grid-cols-2 gap-6">
+          {/* Charts Section */}
+          <div className="grid lg:grid-cols-2 gap-6 mb-8">
+            {/* Expense Trend Chart */}
             <Card className="glass-green neon-border">
               <CardHeader>
-                <CardTitle className="neon-text font-mono">Monthly Expenses</CardTitle>
+                <CardTitle className="neon-text flex items-center font-mono">
+                  <LineChart className="w-5 h-5 mr-2 text-green-400" />
+                  Expense Trend
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={expenseData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#003300" />
-                    <XAxis dataKey="month" stroke="#00ff88" />
-                    <YAxis stroke="#00ff88" />
-                    <Bar dataKey="amount" fill="url(#greenGradient)" radius={[4, 4, 0, 0]} />
-                    <defs>
-                      <linearGradient id="greenGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#00ff88" />
-                        <stop offset="100%" stopColor="#00b359" />
-                      </linearGradient>
-                    </defs>
-                  </BarChart>
-                </ResponsiveContainer>
+                <div className="h-64 flex items-end justify-between space-x-2">
+                  {analyticsData.expenseTrend.map((item, index) => (
+                    <div key={index} className="flex-1 flex flex-col items-center">
+                      <div
+                        className="w-full bg-gradient-to-t from-green-500 to-green-400 rounded-t"
+                        style={{ height: `${(item.amount / 300) * 200}px` }}
+                      />
+                      <p className="text-green-400/70 font-mono text-xs mt-2">{item.date}</p>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
 
+            {/* Category Breakdown */}
             <Card className="glass-white neon-white-border">
               <CardHeader>
-                <CardTitle className="neon-white-text font-mono">Expenses by Group</CardTitle>
+                <CardTitle className="neon-white-text flex items-center font-mono">
+                  <PieChart className="w-5 h-5 mr-2 text-slate-400" />
+                  Category Breakdown
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={groupData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={120}
-                      paddingAngle={5}
-                      dataKey="value"
-                    >
-                      {groupData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="grid grid-cols-2 gap-2 mt-4">
-                  {groupData.map((group, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: group.color }} />
-                      <span className="text-sm text-slate-300 font-mono">{group.name}</span>
+                <div className="space-y-3">
+                  {analyticsData.categoryBreakdown.map((category, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{
+                            backgroundColor: `hsl(${index * 60}, 70%, 50%)`
+                          }}
+                        />
+                        <span className="text-slate-300 font-mono text-sm">{category.category}</span>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-slate-300 font-mono font-semibold">${category.amount}</p>
+                        <p className="text-slate-400/70 font-mono text-xs">{category.percentage}%</p>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -207,42 +238,41 @@ export function Analytics({ onPageChange }: AnalyticsProps) {
             </Card>
           </div>
 
-          {/* Settlement Trends */}
+          {/* Recent Activity */}
           <Card className="glass-green neon-border">
             <CardHeader>
-              <CardTitle className="neon-text font-mono">Settlement Trends</CardTitle>
+              <CardTitle className="neon-text flex items-center font-mono">
+                <Activity className="w-5 h-5 mr-2 text-green-400" />
+                Recent Activity
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={settlementData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#003300" />
-                  <XAxis dataKey="month" stroke="#00ff88" />
-                  <YAxis stroke="#00ff88" />
-                  <Line
-                    type="monotone"
-                    dataKey="settled"
-                    stroke="#00ff88"
-                    strokeWidth={3}
-                    dot={{ fill: "#00ff88", strokeWidth: 2, r: 4 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="pending"
-                    stroke="#ffcc00"
-                    strokeWidth={3}
-                    dot={{ fill: "#ffcc00", strokeWidth: 2, r: 4 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-              <div className="flex items-center justify-center space-x-6 mt-4">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-green-500" />
-                  <span className="text-sm text-green-300 font-mono">Settled (%)</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                  <span className="text-sm text-green-300 font-mono">Pending (%)</span>
-                </div>
+              <div className="space-y-4">
+                {analyticsData.recentActivity.map((activity, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-4 rounded-lg glass-green border border-green-500/20 hover:bg-green-500/10 hover:border-green-500/40 transition-colors"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div
+                        className={`w-2 h-2 rounded-full ${activity.type === "expense" ? "bg-green-400" : "bg-slate-400"}`}
+                      />
+                      <div>
+                        <p className="neon-text font-medium font-mono">{activity.description}</p>
+                        <div className="flex items-center space-x-2 text-sm text-green-400/70 font-mono">
+                          <span>{activity.group}</span>
+                          <span>•</span>
+                          <span>{activity.time}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <span
+                      className={`font-semibold font-mono ${activity.type === "expense" ? "text-green-400" : "text-slate-400"}`}
+                    >
+                      {activity.type === "expense" ? "-" : "+"}${activity.amount.toFixed(2)}
+                    </span>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>

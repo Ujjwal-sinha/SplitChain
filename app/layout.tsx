@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import '@/styles/matrix.css'
+import { CivicAuthProvider } from '@civic/auth-web3/nextjs'
+import { WalletProvider } from '@/components/wallet-provider'
 
 export const metadata: Metadata = {
   title: 'Splitwise',
@@ -15,7 +17,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <CivicAuthProvider>
+          <WalletProvider>
+            {children}
+          </WalletProvider>
+        </CivicAuthProvider>
+      </body>
     </html>
   )
 }

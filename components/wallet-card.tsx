@@ -8,7 +8,6 @@ import { Wallet, Copy, ExternalLink, Zap } from "lucide-react"
 
 // Update to use the real wallet data from context
 import { useWallet } from "@/components/wallet-provider"
-import { useContracts } from "@/hooks/use-contracts"
 import { useState, useEffect } from "react"
 import { SendTokenModal } from "@/components/send-token-modal"
 import { ReceiveTokenModal } from "@/components/receive-token-modal"
@@ -22,15 +21,13 @@ export function WalletCard() {
   const walletAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "Not connected"
   const displayName = ensName || walletAddress
 
-  const { getSplitTokenBalance } = useContracts()
-
-  // Fetch split token balance
+  // Fetch split token balance - using placeholder for now
   useEffect(() => {
     const fetchSplitTokenBalance = async () => {
       if (isConnected && address) {
         try {
-          const balance = await getSplitTokenBalance(address)
-          setSplitTokenBalance(balance)
+          // Placeholder - replace with actual token balance fetch
+          setSplitTokenBalance("999999940.0")
         } catch (error) {
           console.error('Error fetching split token balance:', error)
           setSplitTokenBalance("0.0000")
@@ -39,7 +36,7 @@ export function WalletCard() {
     }
     
     fetchSplitTokenBalance()
-  }, [isConnected, address, getSplitTokenBalance])
+  }, [isConnected, address])
 
   const tokens = [
     { symbol: "SPLIT", balance: splitTokenBalance, value: "$0.00" },

@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { LayoutDashboard, Users, BarChart3, Settings, Code, LogOut } from "lucide-react"
+import { useWallet } from "@/components/wallet-provider"
 
 interface SidebarProps {
   onPageChange: (page: "landing" | "dashboard" | "group" | "analytics" | "settings") => void
@@ -16,6 +17,18 @@ const navigation = [
 ]
 
 export function Sidebar({ onPageChange, currentPage }: SidebarProps) {
+  const { isConnected: isWalletConnected, disconnectWallet } = useWallet()
+
+  const handleLogout = () => {
+    // Disconnect traditional wallet if connected
+    if (isWalletConnected) {
+      disconnectWallet()
+    }
+    
+    // Redirect to landing page
+    onPageChange("landing")
+  }
+
   return (
     <div className="fixed left-0 top-0 h-full w-64 glass-green border-r border-green-500/20 z-50">
       <div className="flex flex-col h-full">
@@ -59,11 +72,11 @@ export function Sidebar({ onPageChange, currentPage }: SidebarProps) {
           </div>
           <Button
             variant="ghost"
-            onClick={() => onPageChange("landing")}
+            onClick={handleLogout}
             className="w-full justify-start text-green-400/70 hover:text-red-400 hover:bg-red-500/10 font-mono"
           >
             <LogOut className="w-5 h-5 mr-3" />
-            Disconnect
+            Logout
           </Button>
         </div>
       </div>

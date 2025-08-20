@@ -47,14 +47,18 @@ function FlowingParticles() {
   return (
     <points ref={pointsRef}>
       <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={particleCount} array={positions} itemSize={3} />
+        <bufferAttribute attach="attributes-position" count={particleCount} array={positions} itemSize={3} args={[positions, 3]} />
       </bufferGeometry>
-      <pointsMaterial size={0.05} color="#ffffff" transparent opacity={0.8} /> {/* Changed to white */}
+      <pointsMaterial size={0.05} color="#ffffff" transparent opacity={0.8} />
     </points>
   )
 }
 
-export function BalanceFlow() {
+interface BalanceFlowProps {
+  totalBalance: number
+}
+
+export function BalanceFlow({ totalBalance }: BalanceFlowProps) {
   return (
     <div className="h-48 w-full relative">
       <Canvas camera={{ position: [0, 0, 5] }}>
@@ -65,7 +69,7 @@ export function BalanceFlow() {
       {/* Overlay Info */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-2xl font-bold text-white mb-2">$2,847.50</p>
+          <p className="text-2xl font-bold text-white mb-2">${totalBalance.toFixed(2)}</p>
           <p className="text-slate-400">Total Balance Across Groups</p>
         </div>
       </div>

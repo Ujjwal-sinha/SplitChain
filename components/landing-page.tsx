@@ -3,11 +3,11 @@
 import { useRef, useState, useEffect } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
 import { OrbitControls, Sphere, MeshDistortMaterial, Box } from "@react-three/drei"
-import { ConnectWalletButton } from "@/components/connect-wallet-button"
+import { CivicAuthButton } from "@/components/civic-auth-button"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, Shield, Zap, Users, PieChart, Coins, Globe, Github, Twitter, BookOpen, ExternalLink, Code, Cpu, DollarSign, LayoutDashboard, Network, Receipt, TrendingUp } from "lucide-react"
+import { ArrowRight, Shield, Zap, Users, PieChart, Coins, Globe, Github, Twitter, BookOpen, ExternalLink, Code, Cpu, DollarSign, LayoutDashboard, Network, Receipt, TrendingUp, Loader2 } from "lucide-react"
 import { CONTRACT_ADDRESSES } from "@/lib/contracts"
 import type * as THREE from "three"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -94,6 +94,7 @@ interface LandingPageProps {
 export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps) {
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null)
   const [currentInfoIndex, setCurrentInfoIndex] = useState(0)
+  const [isSigningIn, setIsSigningIn] = useState(false)
 
   const infoMessages = [
     "Web3-Native Expense Protocol",
@@ -217,6 +218,15 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
     },
   ]
 
+  const handleSignIn = async () => {
+    setIsSigningIn(true)
+    // Simulate loading time for better UX
+    setTimeout(() => {
+      onWalletConnect()
+      setIsSigningIn(false)
+    }, 2000)
+  }
+
   return (
     <div className="min-h-screen matrix-bg relative overflow-hidden">
       <MatrixRain />
@@ -271,11 +281,22 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
-              <ConnectWalletButton
-                onConnect={onWalletConnect}
-                size="lg"
-                className="btn-matrix px-8 py-4 text-lg font-mono"
-              />
+              {isSigningIn ? (
+                <Button
+                  disabled
+                  size="lg"
+                  className="bg-green-500 text-black px-8 py-4 text-lg font-mono rounded-none border-0 shadow-lg shadow-green-500/25"
+                >
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Signing in with Civic...
+                </Button>
+              ) : (
+                <CivicAuthButton
+                  onConnect={handleSignIn}
+                  size="lg"
+                  className="bg-green-500 text-black px-8 py-4 text-lg font-mono rounded-none border-0 shadow-lg shadow-green-500/25 hover:bg-green-600"
+                />
+              )}
               <Button
                 variant="outline"
                 size="lg"
@@ -460,8 +481,27 @@ export function LandingPage({ onWalletConnect, onPageChange }: LandingPageProps)
           <div className="text-center py-16">
             <h2 className="text-2xl font-bold neon-text mb-4 font-mono">Ready to Split Smart?</h2>
             <p className="text-green-400/80 mb-8 font-mono">Join the future of expense sharing on the blockchain</p>
-            <ConnectWalletButton size="lg" className="mr-4" />
-            <Button variant="outline" size="lg" className="border-green-500/50 text-green-400 hover:bg-green-500/10 font-mono">
+            {isSigningIn ? (
+              <Button
+                disabled
+                size="lg"
+                className="bg-green-500 text-black px-8 py-4 text-lg font-mono rounded-none border-0 shadow-lg shadow-green-500/25 mr-4"
+              >
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                Signing in with Civic...
+              </Button>
+            ) : (
+              <CivicAuthButton 
+                onConnect={handleSignIn}
+                size="lg" 
+                className="bg-green-500 text-black px-8 py-4 text-lg font-mono rounded-none border-0 shadow-lg shadow-green-500/25 hover:bg-green-600 mr-4" 
+              />
+            )}
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-green-500/50 text-green-400 hover:bg-green-500/10 font-mono"
+            >
               <BookOpen className="w-4 h-4 mr-2" />
               Documentation
             </Button>

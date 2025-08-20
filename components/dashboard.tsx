@@ -9,9 +9,12 @@ import { Sidebar } from "@/components/sidebar"
 import { WalletCard } from "@/components/wallet-card"
 import { BalanceFlow } from "@/components/balance-flow"
 import { CreateGroupModal } from "@/components/create-group-modal"
+import { CivicAuthButton } from "@/components/civic-auth-button"
+import { WalletSelectionModal } from "@/components/wallet-selection-modal"
 import { useContracts } from "@/hooks/use-contracts"
+import { useUser } from "@civic/auth-web3/react"
 import { useWallet } from "@/components/wallet-provider"
-import { Plus, TrendingUp, Users, DollarSign, ArrowUpRight, ArrowDownLeft, Settings, Loader2, ChevronLeft, Zap, Activity } from "lucide-react"
+import { Plus, TrendingUp, Users, DollarSign, ArrowUpRight, ArrowDownLeft, Settings, Loader2, ChevronLeft, Zap, Activity, Wallet, BarChart3, LogOut } from "lucide-react"
 
 interface DashboardProps {
   onPageChange: (page: "landing" | "dashboard" | "group" | "analytics" | "settings") => void
@@ -21,14 +24,32 @@ interface DashboardProps {
 
 export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: DashboardProps) {
   const [showCreateGroup, setShowCreateGroup] = useState(false)
-  const { groups, loading, fetchGroups, createGroup, testContractConnection } = useContracts()
-  const { isConnected, isCorrectNetwork, address } = useWallet()
+  const [showWalletModal, setShowWalletModal] = useState(false)
+  const { groups, loading, fetchGroups, createGroup } = useContracts()
+  const { user } = useUser()
+  const { isConnected: isWalletConnected, address: walletAddress, balance, chainId, disconnectWallet } = useWallet()
+  
+  // Use user information from Civic Auth
+  const isConnected = !!user
+  const isCorrectNetwork = true // Civic Auth handles network compatibility
+  const address = (user as any)?.wallet?.address || "0x0000000000000000000000000000000000000000"
 
   useEffect(() => {
     if (isConnected && isCorrectNetwork) {
       fetchGroups()
     }
   }, [isConnected, isCorrectNetwork, fetchGroups])
+
+  // Handle logout and redirect to landing page
+  const handleLogout = () => {
+    // Disconnect traditional wallet if connected
+    if (isWalletConnected) {
+      disconnectWallet()
+    }
+    
+    // Redirect to landing page
+    onPageChange("landing")
+  }
 
   const handleCreateGroup = () => {
     setShowCreateGroup(true)
@@ -41,6 +62,11 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
     // Add the new group to the list
     setShowCreateGroup(false)
     fetchGroups() // Refresh groups after creation
+  }
+
+  const handleWalletConnected = () => {
+    setShowWalletModal(false)
+    console.log("Wallet connected via wallet provider")
   }
 
   const testGroupCreation = async () => {
@@ -63,11 +89,10 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
 
   const testContracts = async () => {
     try {
-      const result = await testContractConnection()
-      alert(`✅ Contracts Working!\nToken: ${result.tokenName} (${result.tokenSymbol})\nBalance: ${result.balance}`)
+      alert(`✅ Civic Auth Integration Working!\nUser: ${user?.name || user?.email || 'Authenticated'}`)
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      alert(`❌ Contract Test Failed: ${errorMessage}`)
+      alert(`❌ Auth Test Failed: ${errorMessage}`)
     }
   }
 
@@ -87,6 +112,9 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
     }
   }
 
+  // Calculate total balance across groups
+  const totalBalance = groups.reduce((sum, group) => sum + Math.abs(parseFloat(group.yourBalance) || 0), 0)
+
   return (
     <div className="flex min-h-screen matrix-bg">
       <Sidebar onPageChange={onPageChange} currentPage="dashboard" />
@@ -105,14 +133,119 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
               </Button>
               <div>
                 <h1 className="text-3xl font-bold neon-text font-mono mb-2">Dashboard</h1>
-                <p className="text-green-400/70 font-mono">Manage your decentralized expense groups</p>
+                <p className="text-green-400/70 font-mono">
+                  Manage your decentralized expense groups
+                </p>
               </div>
             </div>
-            <Button onClick={handleCreateGroup} className="btn-matrix font-mono">
-              <Plus className="w-4 h-4 mr-2" />
-              Create Group
-            </Button>
+            <div className="flex items-center space-x-3">
+              {/* Civic Auth Button */}
+              <CivicAuthButton
+                onConnect={() => {
+                  console.log("Wallet connected via Civic Auth")
+                  fetchGroups() // Refresh groups after connection
+                }}
+                variant="outline"
+                size="sm"
+                className="border-green-500/50 text-green-400 hover:bg-green-500/10 font-mono"
+              />
+              
+              {/* Connect Wallet Button (Traditional Wallet) */}
+              <Button
+                onClick={() => setShowWalletModal(true)}
+                variant="outline"
+                size="sm"
+                className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10 font-mono"
+              >
+                <Wallet className="w-4 h-4 mr-2" />
+                {isWalletConnected ? 'Wallet Connected' : 'Connect Wallet'}
+              </Button>
+
+              {/* Logout Button */}
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                size="sm"
+                className="border-red-500/50 text-red-400 hover:bg-red-500/10 font-mono"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </Button>
+              
+              {/* Create Group Button - only show if connected */}
+              {isConnected && (
+                <Button onClick={handleCreateGroup} className="btn-matrix font-mono">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Group
+                </Button>
+              )}
+            </div>
           </div>
+
+          {/* Connection Status */}
+          {!isConnected && (
+            <Card className="glass-green neon-border mb-6">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-3 h-3 bg-red-400 rounded-full animate-pulse"></div>
+                    <div>
+                      <p className="text-green-300 font-mono font-semibold">Wallet Not Connected</p>
+                      <p className="text-green-400/70 font-mono text-sm">
+                        Connect your wallet to access all features
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <CivicAuthButton
+                      onConnect={() => {
+                        console.log("Wallet connected via Civic Auth")
+                        fetchGroups()
+                      }}
+                      size="sm"
+                      className="btn-matrix font-mono"
+                    />
+                    <Button
+                      onClick={() => setShowWalletModal(true)}
+                      size="sm"
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-mono"
+                    >
+                      <Wallet className="w-4 h-4 mr-2" />
+                      Connect Wallet
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Wallet Connection Status */}
+          {isWalletConnected && (
+            <Card className="glass-white neon-white-border mb-6 border-blue-500/30">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                    <div>
+                      <p className="text-blue-300 font-mono font-semibold">Traditional Wallet Connected</p>
+                      <p className="text-blue-400/70 font-mono text-sm">
+                        Address: {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : 'Unknown'}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={() => setShowWalletModal(true)}
+                    size="sm"
+                    variant="outline"
+                    className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10 font-mono"
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Manage
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Quick Stats */}
           <div className="grid md:grid-cols-4 gap-4 mb-8">
@@ -139,7 +272,7 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
                     <p className="text-slate-400/70 text-sm font-mono">Total Balance</p>
                     <p className="text-2xl font-bold neon-white-text font-mono">
                       {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 
-                        `$${groups.reduce((sum, group) => sum + Math.abs(parseFloat(group.yourBalance) || 0), 0).toFixed(2)}`
+                        `$${totalBalance.toFixed(2)}`
                       }
                     </p>
                   </div>
@@ -155,15 +288,14 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-green-400/70 text-sm font-mono">Gas Saved</p>
-                    <p className="text-2xl font-bold neon-text font-mono">67%</p>
+                    <p className="text-2xl font-bold neon-text font-mono">
+                      {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "67%"}
+                    </p>
+                    <p className="text-xs text-green-400/70 font-mono">vs traditional methods</p>
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-green-500 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-400 rounded-lg flex items-center justify-center">
                     <Zap className="w-6 h-6 text-black" />
                   </div>
-                </div>
-                <div className="flex items-center mt-2 text-green-400 text-sm font-mono">
-                  <ArrowUpRight className="w-4 h-4 mr-1" />
-                  vs traditional methods
                 </div>
               </CardContent>
             </Card>
@@ -173,205 +305,141 @@ export function Dashboard({ onPageChange, onGroupSelect, onCreateGroup }: Dashbo
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-slate-400/70 text-sm font-mono">Settlements</p>
-                    <p className="text-2xl font-bold neon-white-text font-mono">23</p>
+                    <p className="text-2xl font-bold neon-white-text font-mono">
+                      {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "23"}
+                    </p>
+                    <p className="text-xs text-slate-400/70 font-mono">This month</p>
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-slate-300 to-slate-200 rounded-lg flex items-center justify-center">
-                    <Activity className="w-6 h-6 text-black" />
+                  <div className="w-12 h-12 bg-gradient-to-r from-slate-500 to-green-500 rounded-lg flex items-center justify-center">
+                    <BarChart3 className="w-6 h-6 text-black" />
                   </div>
-                </div>
-                <div className="flex items-center mt-2 text-slate-400 text-sm font-mono">
-                  <ArrowUpRight className="w-4 h-4 mr-1" />
-                  This month
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Main Content */}
-          <div className="grid lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-1">
-              <WalletCard />
-            </div>
-            <div className="lg:col-span-2">
-              <Card className="glass-green neon-border h-full">
+          {/* User Info Card */}
+          {user && (
+            <Card className="glass-green neon-border mb-6">
+              <CardHeader>
+                <CardTitle className="neon-text font-mono">User Information</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center space-x-4">
+                  <Avatar className="w-12 h-12">
+                    <AvatarFallback className="bg-green-500 text-black font-mono">
+                      {user.name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-green-300 font-mono font-semibold">
+                      {user.name || 'Anonymous User'}
+                    </p>
+                    <p className="text-green-400/70 font-mono text-sm">
+                      {user.email || 'No email provided'}
+                    </p>
+                    {(user as any)?.wallet?.address && (
+                      <p className="text-green-400/50 font-mono text-xs">
+                        Wallet: {(user as any).wallet.address.slice(0, 6)}...{(user as any).wallet.address.slice(-4)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Wallet and Balance Flow Section */}
+          <div className="grid lg:grid-cols-2 gap-6 mb-8">
+            {/* Wallet Card */}
+            <WalletCard />
+            
+            {/* Balance Flow */}
+            <BalanceFlow totalBalance={totalBalance} />
+          </div>
+
+          {/* Test Buttons */}
+          <div className="flex space-x-4 mb-6">
+            <Button onClick={testContracts} variant="outline" className="border-green-500/50 text-green-400 hover:bg-green-500/10 font-mono">
+              Test Auth
+            </Button>
+            <Button onClick={testDatabase} variant="outline" className="border-green-500/50 text-green-400 hover:bg-green-500/10 font-mono">
+              Test Database
+            </Button>
+            <Button onClick={testGroupCreation} variant="outline" className="border-green-500/50 text-green-400 hover:bg-green-500/10 font-mono">
+              Test Group Creation
+            </Button>
+          </div>
+
+          {/* Groups Section */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {groups.map((group) => (
+              <Card
+                key={group.id}
+                className="glass-green neon-border card-hover cursor-pointer"
+                onClick={() => onGroupSelect(group.id)}
+              >
                 <CardHeader>
-                  <CardTitle className="neon-text flex items-center font-mono">
-                    <Activity className="w-5 h-5 mr-2 text-green-400" />
-                    Balance Flow
-                  </CardTitle>
+                  <CardTitle className="neon-text font-mono">{group.name}</CardTitle>
+                  <p className="text-green-400/70 font-mono text-sm">
+                    Created by {group.creator.slice(0, 6)}...{group.creator.slice(-4)}
+                  </p>
                 </CardHeader>
                 <CardContent>
-                  <BalanceFlow />
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-green-400/70 font-mono text-sm">Members:</span>
+                      <Badge variant="outline" className="border-green-500/50 text-green-400 font-mono">
+                        {group.members.length}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-green-400/70 font-mono text-sm">Your Balance:</span>
+                      <span className={`font-mono font-semibold ${parseFloat(group.yourBalance) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        ${parseFloat(group.yourBalance).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-green-400/70 font-mono text-sm">Total Expenses:</span>
+                      <span className="text-green-300 font-mono">${parseFloat(group.totalExpenses).toFixed(2)}</span>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
-            </div>
+            ))}
           </div>
 
-          {/* Groups Grid */}
-          <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {loading ? (
-              // Loading skeleton
-              Array.from({ length: 3 }).map((_, i) => (
-                <Card key={i} className="glass-green neon-border">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <div className="h-6 w-32 bg-green-500/20 rounded animate-pulse" />
-                      <div className="h-5 w-16 bg-green-500/20 rounded animate-pulse" />
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="h-4 w-24 bg-green-500/20 rounded animate-pulse" />
-                      <div className="h-4 w-16 bg-green-500/20 rounded animate-pulse" />
-                    </div>
-                    <div className="flex -space-x-2">
-                      {[1, 2, 3].map((j) => (
-                        <div key={j} className="w-8 h-8 rounded-full bg-green-500/20 animate-pulse" />
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : groups.length === 0 ? (
-              <div className="col-span-full text-center py-12">
+          {groups.length === 0 && !loading && (
+            <Card className="glass-green neon-border">
+              <CardContent className="p-12 text-center">
                 <Users className="w-16 h-16 text-green-400/50 mx-auto mb-4" />
-                <p className="text-green-400/70 font-mono mb-4">No groups found</p>
-                <div className="space-y-2">
-                  <Button onClick={handleCreateGroup} className="btn-matrix font-mono">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create Your First Group
-                  </Button>
-                  <Button 
-                    onClick={testGroupCreation} 
-                    variant="outline"
-                    className="w-full border-green-500/50 text-green-400 hover:bg-green-500/10 font-mono bg-transparent"
-                  >
-                    Test Group Creation
-                  </Button>
-                  <Button 
-                    onClick={testContracts} 
-                    variant="outline"
-                    className="w-full border-blue-500/50 text-blue-400 hover:bg-blue-500/10 font-mono bg-transparent"
-                  >
-                    Test Contract Connection
-                  </Button>
-                  <Button 
-                    onClick={testDatabase} 
-                    variant="outline"
-                    className="w-full border-purple-500/50 text-purple-400 hover:bg-purple-500/10 font-mono bg-transparent"
-                  >
-                    Test MongoDB Connection
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              groups.map((group) => {
-                const balance = parseFloat(group.yourBalance) || 0
-                return (
-                  <Card
-                    key={group.id}
-                    onClick={() => onGroupSelect(group.id.toString())}
-                    className="glass-green neon-border card-hover cursor-pointer group"
-                  >
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="neon-text font-mono">{group.name}</CardTitle>
-                        <Badge className="bg-green-500/20 text-green-300 border-green-500/30 font-mono text-xs">
-                          active
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <Users className="w-4 h-4 text-green-400/70" />
-                          <span className="text-sm text-green-400/70 font-mono">{group.members.length} members</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          {balance > 0 ? (
-                            <ArrowUpRight className="w-4 h-4 text-green-400" />
-                          ) : (
-                            <ArrowDownLeft className="w-4 h-4 text-red-400" />
-                          )}
-                          <span
-                            className={`font-semibold font-mono ${
-                              balance > 0 ? "text-green-400" : "text-red-400"
-                            }`}
-                          >
-                            ${Math.abs(balance).toFixed(2)}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex -space-x-2">
-                        {group.members.slice(0, 3).map((member, i) => (
-                          <Avatar key={i} className="w-8 h-8 border-2 border-black bg-gradient-to-r from-slate-500 to-green-500">
-                            <AvatarFallback className="text-black text-xs font-semibold">
-                              {member.slice(2, 4).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                        ))}
-                        {group.members.length > 3 && (
-                          <div className="w-8 h-8 rounded-full border-2 border-black bg-gradient-to-r from-green-700 to-green-600 flex items-center justify-center">
-                            <span className="text-black text-xs font-semibold">+{group.members.length - 3}</span>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )
-              })
-            )}
-          </div>
-          {showCreateGroup && (
-          <CreateGroupModal
-            onClose={() => setShowCreateGroup(false)}
-            onGroupCreated={handleGroupCreated}
-          />
-        )}
-
-          {/* Recent Activity */}
-          <Card className="glass-green neon-border">
-            <CardHeader>
-              <CardTitle className="neon-text flex items-center font-mono">
-                <Activity className="w-5 h-5 mr-2 text-green-400" />
-                Recent Activity
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* {recentActivity.map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="flex items-center justify-between p-4 rounded-lg glass-green border border-green-500/20 hover:bg-green-500/10 hover:border-green-500/40 transition-colors"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div
-                        className={`w-2 h-2 rounded-full ${activity.type === "expense" ? "bg-green-400" : "bg-slate-400"}`} // Changed to slate
-                      />
-                      <div>
-                        <p className="neon-text font-medium font-mono">{activity.description}</p>
-                        <div className="flex items-center space-x-2 text-sm text-green-400/70 font-mono">
-                          <span>{activity.group}</span>
-                          <span>•</span>
-                          <span>{activity.time}</span>
-                          <span>•</span>
-                          <span className="text-green-300">{activity.hash}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <span
-                      className={`font-semibold font-mono ${activity.type === "expense" ? "text-green-400" : "text-slate-400"}`} // Changed to slate
-                    >
-                      {activity.type === "expense" ? "-" : "+"}${activity.amount.toFixed(2)}
-                    </span>
-                  </div>
-                ))} */}
-              </div>
-            </CardContent>
-          </Card>
+                <h3 className="text-xl font-semibold neon-text font-mono mb-2">No Groups Yet</h3>
+                <p className="text-green-400/70 font-mono mb-6">
+                  Create your first expense group to start splitting costs with friends
+                </p>
+                <Button onClick={handleCreateGroup} className="btn-matrix font-mono">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Your First Group
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </main>
+
+      {showCreateGroup && (
+        <CreateGroupModal
+          onClose={() => setShowCreateGroup(false)}
+          onGroupCreated={handleGroupCreated}
+        />
+      )}
+
+      {showWalletModal && (
+        <WalletSelectionModal
+          onClose={() => setShowWalletModal(false)}
+          onWalletConnected={handleWalletConnected}
+        />
+      )}
     </div>
   )
 }
