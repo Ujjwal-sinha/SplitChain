@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Civic Auth - SplitChain Integration Diagram</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: auto;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00ff88, #00d4aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #00ff88;
+            opacity: 0.8;
+        }
+
+        .diagram-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .flow-diagram, .benefits-diagram {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .diagram-title {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: #00ff88;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #00ff88;
+            transition: all 0.3s ease;
+        }
+
+        .flow-step:hover {
+            transform: translateX(5px);
+            background: rgba(0, 255, 136, 0.15);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #00ff88, #00d4aa);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #000;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            color: #00ff88;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .step-content p {
+            color: #cccccc;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .arrow {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #00ff88;
+            margin: 10px 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .benefit-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            background: rgba(0, 255, 136, 0.1);
+            border-color: #00ff88;
+        }
+
+        .benefit-card h3 {
+            color: #00ff88;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .benefit-card p {
+            color: #cccccc;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .tech-stack {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tech-item {
+            background: rgba(0, 255, 136, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .tech-item h4 {
+            color: #00ff88;
+            margin-bottom: 5px;
+        }
+
+        .tech-item p {
+            color: #cccccc;
+            font-size: 0.8rem;
+        }
+
+        .security-features {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .security-item {
+            background: rgba(255, 0, 0, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .security-item h4 {
+            color: #ff6b6b;
+            margin-bottom: 5px;
+        }
+
+        .security-item p {
+            color: #cccccc;
+            font-size: 0.8rem;
+        }
+
+        .integration-example {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #333;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .highlight {
+            color: #ff6b6b;
+        }
+
+        .comment {
+            color: #888;
+        }
+
+        @media (max-width: 768px) {
+            .diagram-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Civic Auth Integration</h1>
+            <p>How Civic Auth Powers SplitChain's Secure Authentication</p>
+        </div>
+
+        <div class="diagram-container">
+            <div class="flow-diagram">
+                <h2 class="diagram-title">🔐 Authentication Flow</h2>
+                
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>User Initiates Login</h3>
+                        <p>User clicks "Sign In with Civic" button on SplitChain dApp</p>
+                    </div>
+                </div>
+
+                <div class="arrow">↓</div>
+
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Civic Auth Request</h3>
+                        <p>SplitChain requests authentication via Civic's Web3 auth SDK</p>
+                    </div>
+                </div>
+
+                <div class="arrow">↓</div>
+
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Wallet Connection</h3>
+                        <p>User connects their Web3 wallet (MetaMask, etc.) to Civic</p>
+                    </div>
+                </div>
+
+                <div class="arrow">↓</div>
+
+                <div class="flow-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Identity Verification</h3>
+                        <p>Civic verifies user identity using blockchain-based credentials</p>
+                    </div>
+                </div>
+
+                <div class="arrow">↓</div>
+
+                <div class="flow-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>JWT Token Generation</h3>
+                        <p>Civic generates a secure JWT token with user's wallet address</p>
+                    </div>
+                </div>
+
+                <div class="arrow">↓</div>
+
+                <div class="flow-step">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>Access Granted</h3>
+                        <p>User is authenticated and can access SplitChain features</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="benefits-diagram">
+                <h2 class="diagram-title">🚀 Benefits for SplitChain</h2>
+                
+                <div class="benefit-card">
+                    <h3>🔒 Enhanced Security</h3>
+                    <p>Blockchain-based authentication eliminates traditional password vulnerabilities and provides cryptographic proof of identity.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <h3>⚡ Seamless UX</h3>
+                    <p>One-click wallet-based login that integrates perfectly with SplitChain's Web3-native architecture.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <h3>🌐 Web3 Native</h3>
+                    <p>Built specifically for blockchain applications, ensuring compatibility with SplitChain's decentralized expense protocol.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <h3>🔗 Wallet Integration</h3>
+                    <p>Direct integration with user's existing Web3 wallet for transaction signing and expense management.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <h3>🛡️ Privacy First</h3>
+                    <p>Zero-knowledge authentication that respects user privacy while maintaining security standards.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <h3>⚙️ Easy Integration</h3>
+                    <p>Simple SDK integration with Next.js, reducing development time and maintenance overhead.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tech-stack">
+            <h2 class="diagram-title">🛠️ Technical Stack</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <h4>Civic Auth SDK</h4>
+                    <p>Web3 authentication library for React/Next.js</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Next.js API Routes</h4>
+                    <p>Server-side authentication handling</p>
+                </div>
+                <div class="tech-item">
+                    <h4>JWT Tokens</h4>
+                    <p>Secure session management</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Web3 Wallets</h4>
+                    <p>MetaMask, WalletConnect support</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Blockchain Identity</h4>
+                    <p>Cryptographic identity verification</p>
+                </div>
+                <div class="tech-item">
+                    <h4>React Components</h4>
+                    <p>Pre-built UI components</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="security-features">
+            <h2 class="diagram-title">🛡️ Security Features</h2>
+            <div class="security-grid">
+                <div class="security-item">
+                    <h4>Cryptographic Proof</h4>
+                    <p>Mathematical verification of user identity</p>
+                </div>
+                <div class="security-item">
+                    <h4>No Password Storage</h4>
+                    <p>Eliminates password-based attack vectors</p>
+                </div>
+                <div class="security-item">
+                    <h4>Wallet-Based Auth</h4>
+                    <p>Leverages existing wallet security</p>
+                </div>
+                <div class="security-item">
+                    <h4>Session Management</h4>
+                    <p>Secure JWT token handling</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="integration-example">
+            <h2 class="diagram-title">💻 Integration Example</h2>
+            <p style="color: #cccccc; margin-bottom: 20px;">How Civic Auth is implemented in SplitChain:</p>
+            
+            <div class="code-block">
+                <pre><span class="comment">// Civic Auth Button Component</span>
+<span class="highlight">import</span> { UserButton, useUser, SignInButton } <span class="highlight">from</span> <span class="comment">"@civic/auth-web3/react"</span>
+
+<span class="highlight">export function</span> CivicAuthButton() {
+  <span class="highlight">const</span> { user } = useUser()
+
+  <span class="highlight">if</span> (user) {
+    <span class="highlight">return</span> &lt;UserButton /&gt;
+  }
+
+  <span class="highlight">return</span> (
+    &lt;SignInButton className="bg-green-500 text-black" /&gt;
+  )
+}
+
+<span class="comment">// API Route Handler</span>
+<span class="highlight">import</span> { handler } <span class="highlight">from</span> <span class="comment">'@civic/auth-web3/nextjs'</span>
+
+<span class="highlight">export const</span> GET = handler()
+<span class="highlight">export const</span> POST = handler()</pre>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; padding: 20px; background: rgba(0, 255, 136, 0.1); border-radius: 15px; border: 1px solid rgba(0, 255, 136, 0.3);">
+            <h3 style="color: #00ff88; margin-bottom: 10px;">🎯 Why Civic Auth for SplitChain?</h3>
+            <p style="color: #cccccc; line-height: 1.6;">
+                Civic Auth provides the perfect authentication solution for SplitChain by offering Web3-native, 
+                secure, and user-friendly authentication that seamlessly integrates with our decentralized 
+                expense sharing protocol. It eliminates the friction of traditional authentication while 
+                maintaining the highest security standards required for financial applications.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
