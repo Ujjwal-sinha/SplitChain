@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
 import { OrbitControls, Sphere, MeshDistortMaterial, Box } from "@react-three/drei"
 import { CivicAuthButton } from "@/components/civic-auth-button"
+import { AuthStatusSlider } from "@/components/auth-status-slider"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -271,7 +272,7 @@ export function LandingPage({ onPageChange }: LandingPageProps) {
               Trustless • Gasless • Instant • Built for the future of Web3 finance
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-8">
               <CivicAuthButton
                 size="lg"
                 className="bg-green-500 text-black px-8 py-4 text-lg font-mono rounded-none border-0 shadow-lg shadow-green-500/25 hover:bg-green-600"
@@ -285,6 +286,11 @@ export function LandingPage({ onPageChange }: LandingPageProps) {
                 <LayoutDashboard className="w-5 h-5 mr-2" />
                 Dashboard
               </Button>
+            </div>
+
+            {/* Auth Status Slider */}
+            <div className="max-w-md mx-auto mb-16">
+              <AuthStatusSlider />
             </div>
 
             {/* Stats */}
